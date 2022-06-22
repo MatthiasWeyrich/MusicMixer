@@ -6,10 +6,10 @@ using System;
 
 public class FileManager : MonoBehaviour
 { 
-    public Action<AudioClip> requestedSoundLoaded;
+    public Action<AudioClip,int> requestedSoundLoaded;
     public Action<AudioClip> requestedMusicLoaded;
     private string path;
-    int i,k = 0;
+    int i = 1,k = 0;
 
     public void OpenFileExplorer(){
         path = EditorUtility.OpenFilePanel("Available Sounds", "F:/Audio Done/", "mp3");
@@ -26,7 +26,7 @@ public class FileManager : MonoBehaviour
             if(www.result == UnityWebRequest.Result.Success){
                 AudioClip requestedSound = DownloadHandlerAudioClip.GetContent(www);
                 assignClipName(requestedSound);
-                requestedSoundLoaded?.Invoke(requestedSound);
+                requestedSoundLoaded?.Invoke(requestedSound,i);
             }
         }
     }

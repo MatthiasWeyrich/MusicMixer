@@ -1,18 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class NodeManager
 {
-    private static List<Node> nodeList;
-    public static void addToList(Node node) => nodeList.Add(node);
-    private List<Node> children;
-    public NodeManager(){
-        if(nodeList==null) nodeList = new List<Node>();
-        this.children = new List<Node>();
-    }
-    public void addChild(Node node) => children.Add(node);
-    public void removeChild(Node node) => children.Remove(node);
-    public void notifyChildren() {foreach (var Node in children) { Node.Interact();}}
+    private static Action<int> notifyAllChildrenOfMovement;
 
+    private static Dictionary<int,Node> nodeList;
+    private HashSet<int> children;
+    public NodeManager(Node node){
+        if(nodeList==null) 
+            nodeList = new Dictionary<int, Node>();
+        children = new HashSet<int>();
+        node.DeleteLinesDueToMovement += globalMovementChange;
+        notifyAllChildrenOfMovement += node.RemoveInvolvedLines;
+        node.BeingDestroyedNotice += NodeDestruction;
+        nodeList.Add(node.id,node);
+    }
+    public void addChild(int id) => children.Add(id);
+    public void notifyChildren()
+    {
+        foreach (int id in children)
+        {
+            nodeList[id].Interact();
+        }
+    }
+
+    void globalMovementChange(int id){
+        foreach (var node in nodeList.Values)
+        {
+            node.nm.children.Remove(id);
+        }
+        nodeList[id].nm.children.Clear();
+        notifyAllChildrenOfMovement?.Invoke(id);
+    }
+
+    void NodeDestruction(Node node)
+    {
+        notifyAllChildrenOfMovement -= node.RemoveInvolvedLines;
+        node.BeingDestroyedNotice -= NodeDestruction;
+    }
 }

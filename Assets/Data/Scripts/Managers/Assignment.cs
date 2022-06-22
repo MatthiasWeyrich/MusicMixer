@@ -21,6 +21,7 @@ public class Assignment : MonoBehaviour
         m.source.clip = clip;
         rtm.startCommand += m.OnStartCommand;
         rtm.pauseCommmand += m.OnPauseCommand;
+        rtm.continueCommand += m.OnContinueCommand;
         newMusicNotification += m.newMusicReact;
         m.onNewMusic += deleteMusic;
     }
@@ -31,19 +32,15 @@ public class Assignment : MonoBehaviour
         child.transform.position = parent.transform.position;
         Start s = parent.AddComponent<Start>();
         s.skeleton = s.GetComponent<Skeleton>();
+        s.id = 0;
+        s.instantiateNodeManager();
         rtm.startCommand += s.OnStartCommand;
     }
 
-    void getLoadedSource(AudioClip clip){
+    void getLoadedSource(AudioClip clip,int id){
         GameObject node = createSoundNode();
-        addAudioComponent(node, clip);
+        addAudioComponent(node, clip, id);
         addUIComponents(node);
-
-        if(node!=null) {
-            if(node.TryGetComponent<Sound>(out Sound s)){
-                NodeManager.addToList(s);
-            }
-        }
     }
 
     GameObject createSoundNode(){
@@ -54,12 +51,16 @@ public class Assignment : MonoBehaviour
         return parent;
     }
 
-    void addAudioComponent(GameObject node, AudioClip clip){
+    void addAudioComponent(GameObject node, AudioClip clip, int id){
         Sound s = node.AddComponent<Sound>();
         s.skeleton = node.GetComponent<Skeleton>();
         s.source = s.gameObject.AddComponent<AudioSource>();
         s.source.clip = clip;
+        s.id = id;
+        s.instantiateNodeManager();
         rtm.pauseCommmand += s.onStopCommand;
+        rtm.continueCommand += s.OnContinueCommand;
+        s.BeingDestroyedNotice += DeleteNode;
     }
 
     void addUIComponents(GameObject node){
@@ -69,8 +70,15 @@ public class Assignment : MonoBehaviour
     void deleteMusic(Music m){
         rtm.startCommand -= m.OnStartCommand;
         rtm.pauseCommmand -= m.OnPauseCommand;
+        rtm.continueCommand -= m.OnContinueCommand;
         newMusicNotification -= m.newMusicReact;
         Destroy(m.gameObject);
+    }
+    void DeleteNode(Node n){
+        rtm.pauseCommmand -= n.onStopCommand;
+        rtm.continueCommand -= n.onStopCommand;
+        n.BeingDestroyedNotice -= DeleteNode;
+        Destroy(n.gameObject);
     }
 }
     

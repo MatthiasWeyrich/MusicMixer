@@ -2,12 +2,14 @@ public class Hook : Intermediary
 {
     public override void Interact()
     {
-        throw new System.NotImplementedException();
     }
 
-    protected override void OnEnable()
+    public override void OnContinueCommand()
     {
-        base.OnEnable();
-        nm = new NodeManager();
     }
+
+    public override void onStopCommand()
+    {
+    }
+
 }

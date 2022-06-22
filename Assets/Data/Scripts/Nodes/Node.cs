@@ -1,23 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System;
 
 public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    public Action<int> DeleteLinesDueToMovement;
+    public Action<Node> BeingDestroyedNotice;
+
     public Skeleton skeleton;
-    List<GameObject> lines;
-    protected NodeManager nm;
-    protected bool pause;
+    protected List<LineInteraction> outgoingLines;
+    public NodeManager nm;
+    protected bool paused, drawing;
+    public int id;
+
     Renderer r;
     Color defaultC;
     protected virtual void OnEnable(){
-        lines = new List<GameObject>();
+        outgoingLines = new List<LineInteraction>();
         r = GetComponentInChildren<Renderer>();
         defaultC = r.material.color;
     }
-    public abstract void Interact();
-    public void onStopCommand(){
+    public void instantiateNodeManager()
+    {
+        nm = new NodeManager(this);
     }
+    public abstract void Interact();
+    public abstract void onStopCommand();
+    public abstract void OnContinueCommand();
     /*
     float mouseZ;
     void OnMouseDown(){
@@ -42,10 +52,20 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         mouseOffset = transform.position - GetMouseWorldPos();
         if(Input.GetMouseButton(0)) {
-        skeleton.CreateLine(GetMouseWorldPos());
-        Debug.Log("HI");
+            skeleton.CreateLine(GetMouseWorldPos());
+            skeleton.currentLine.from = id;
+            drawing = true;
         }
-            //skeleton.CreateLine(GetMouseWorldPos());
+        else if(Input.GetMouseButton(1))
+        {
+            DeleteLinesDueToMovement?.Invoke(id);
+            for (int i = outgoingLines.Count - 1; i >= 0; i--)
+            {
+                LineInteraction ln = outgoingLines[i];
+                outgoingLines.Remove(ln);
+                Destroy(ln.gameObject);
+            }
+        }
     }
     public void OnDrag(PointerEventData eventData)
     {
@@ -59,18 +79,39 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
 
     public void OnEndDrag(PointerEventData eventData)
-    {  
-        List<GameObject> p = eventData.hovered;
-        foreach(GameObject g in p){
-            if(g.TryGetComponent<Intermediary>(out Intermediary i)){
-                nm.addChild(g.GetComponent<Sound>());
-                lines.Add(skeleton.currentLine);
-                return;
+    {
+        if (drawing)
+        {
+            List<GameObject> p = eventData.hovered;
+            foreach (GameObject g in p)
+            {
+                if (g.TryGetComponent(out Intermediary i))
+                {
+                    Node n = g.GetComponent<Node>();
+                    nm.addChild(n.id);
+                    skeleton.currentLine.to = n.id;
+                    outgoingLines.Add(skeleton.currentLine);
+                    return;
+                }
+            }
+            Destroy(skeleton.currentLine);
+        }
+
+        drawing = false;
+    }
+
+    public void RemoveInvolvedLines(int id)
+    {
+        if (id == this.id) return;
+        for (int i = outgoingLines.Count-1; i >=0; i--)
+        {
+            if (outgoingLines[i].to == id)
+            {
+                LineInteraction ln = outgoingLines[i];
+                outgoingLines.Remove(ln);
+                Destroy(ln.gameObject);
             }
         }
-        // Right now this destroyes the current line if we move the node somewhere else, which also removes it from the list
-        // You could just assign a new currentLine in the skeleton after it's been added to the list
-        Destroy(skeleton.currentLine);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -87,6 +128,10 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         r.material.color = defaultC;
     }
+    public void OnDeletion(){
+        BeingDestroyedNotice?.Invoke(this);
+    }
+
     Vector3 GetMouseWorldPos()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

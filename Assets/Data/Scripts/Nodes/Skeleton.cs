@@ -5,13 +5,14 @@ using UnityEngine;
 public class Skeleton : MonoBehaviour
 {
     [SerializeField] GameObject linePrefab;
-    public GameObject currentLine;
+    public LineInteraction currentLine;
     public LineRenderer lineRenderer;
     public List<Vector2> linePositions;
     public EdgeCollider2D edgeCollider;
 
     public void CreateLine(Vector3 mouseWP){
-        currentLine = Instantiate(linePrefab, Vector3.zero, Quaternion.identity);
+        GameObject current = Instantiate(linePrefab, Vector3.zero, Quaternion.identity);
+        currentLine = current.AddComponent<LineInteraction>();
         lineRenderer = currentLine.GetComponent<LineRenderer>();
         edgeCollider = currentLine.GetComponent<EdgeCollider2D>();
         linePositions.Clear();

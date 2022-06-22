@@ -16,4 +16,8 @@ public class Music : MonoBehaviour
     public void OnPauseCommand(){
         source.Pause();
     }
+    public void OnContinueCommand(){
+        source.Play();
+    }
+
 }
