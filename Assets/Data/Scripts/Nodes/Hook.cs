@@ -8,6 +8,10 @@ public class Hook : Intermediary
     {
     }
 
+    public override void OnStartCommand()
+    {
+    }
+
     public override void onStopCommand()
     {
     }

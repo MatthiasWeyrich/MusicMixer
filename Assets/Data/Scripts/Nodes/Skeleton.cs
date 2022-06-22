@@ -6,9 +6,9 @@ public class Skeleton : MonoBehaviour
 {
     [SerializeField] GameObject linePrefab;
     public LineInteraction currentLine;
-    public LineRenderer lineRenderer;
+    LineRenderer lineRenderer;
     public List<Vector2> linePositions;
-    public EdgeCollider2D edgeCollider;
+    EdgeCollider2D edgeCollider;
 
     public void CreateLine(Vector3 mouseWP){
         GameObject current = Instantiate(linePrefab, Vector3.zero, Quaternion.identity);

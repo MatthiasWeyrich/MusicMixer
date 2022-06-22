@@ -4,10 +4,6 @@ public class Start : Node
     {
         nm.notifyChildren();
     }
-    public void OnStartCommand()
-    {
-        Interact();
-    }
 
     public override void onStopCommand()
     { 
@@ -15,5 +11,10 @@ public class Start : Node
 
     public override void OnContinueCommand()
     {
+    }
+
+    public override void OnStartCommand()
+    {
+        Interact();
     }
 }

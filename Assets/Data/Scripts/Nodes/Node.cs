@@ -16,6 +16,8 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     Renderer r;
     Color defaultC;
+    Vector3 mouseOffset;
+    
     protected virtual void OnEnable(){
         outgoingLines = new List<LineInteraction>();
         r = GetComponentInChildren<Renderer>();
@@ -25,29 +27,6 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         nm = new NodeManager(this);
     }
-    public abstract void Interact();
-    public abstract void onStopCommand();
-    public abstract void OnContinueCommand();
-    /*
-    float mouseZ;
-    void OnMouseDown(){
-        mouseZ = Camera.main.WorldToScreenPoint(transform.position).z;
-        mOffset = transform.position - GetMouseWorldPos();
-    }
-
-    private Vector3 GetMouseWorldPos()
-    {
-        Vector3 mousePoint = Input.mousePosition;
-        mousePoint.z = mouseZ;
-        return Camera.main.ScreenToWorldPoint(mousePoint);
-    }
-
-    void OnMouseDrag(){
-        transform.position = GetMouseWorldPos() - mOffset;
-    }
-    */
-    Vector3 mouseOffset;
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         mouseOffset = transform.position - GetMouseWorldPos();
@@ -96,7 +75,6 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             Destroy(skeleton.currentLine);
         }
-
         drawing = false;
     }
 
@@ -118,12 +96,10 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         r.material.color = Color.red;
     }
-
     public void OnDrop(PointerEventData eventData)
     {
         r.material.color = defaultC;
     }
-
     public void OnPointerExit(PointerEventData eventData)
     {
         r.material.color = defaultC;
@@ -131,11 +107,14 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnDeletion(){
         BeingDestroyedNotice?.Invoke(this);
     }
-
     Vector3 GetMouseWorldPos()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         return mousePos;
     } 
+    public abstract void Interact();
+    public abstract void onStopCommand();
+    public abstract void OnContinueCommand();
+    public abstract void OnStartCommand();
 }

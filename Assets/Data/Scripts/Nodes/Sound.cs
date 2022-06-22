@@ -19,7 +19,7 @@ public class Sound : Intermediary
     private void Invokation(){
         nm.notifyChildren();
     }
-
+    
     public override void onStopCommand()
     {
         source.Pause();
@@ -30,5 +30,10 @@ public class Sound : Intermediary
     {
         paused = false;
         Interact();
+    }
+
+    public override void OnStartCommand()
+    {
+        paused = false;
     }
 }
