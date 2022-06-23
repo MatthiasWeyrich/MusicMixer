@@ -39,7 +39,7 @@ public class NodeCreator
 
     private GameObject getObjectFromDictionary(string clip)
     {
-        GameObject parent = GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        GameObject parent = GameObject.Instantiate(prefab, new Vector3(1,0,0), Quaternion.identity);
         GameObject child = GameObject.CreatePrimitive(types[clip].type);
         Renderer r = child.GetComponent<Renderer>();
         r = types[clip].r;
@@ -48,7 +48,7 @@ public class NodeCreator
         return parent;
     }
     private GameObject formNode(Type type, ObjectData od){
-        GameObject parent = GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        GameObject parent = GameObject.Instantiate(prefab, new Vector3(1,0,0), Quaternion.identity);
         GameObject child = null;
         switch(type){
             case Type.Sound:

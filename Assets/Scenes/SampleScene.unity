@@ -1845,6 +1845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2914cde1a79b62c4c80606497f3ede3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mixer: {fileID: 24100000, guid: c3c9654e3c1c78e4686eed0905f6928b, type: 2}
   rtm: {fileID: 13748641}
   fm: {fileID: 843170336}
   dm: {fileID: 419210430}

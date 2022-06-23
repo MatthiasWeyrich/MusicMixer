@@ -1,11 +1,13 @@
 using UnityEngine;
 using System;
+using UnityEngine.Audio;
 
 public class Assignment : MonoBehaviour
 {
     private Action newMusicNotification;
     private Action<string> addNodeToDropdown;
 
+    [SerializeField] AudioMixer mixer;
     [SerializeField] RuntimeManager rtm;
     [SerializeField] FileManager fm;
     [SerializeField] DropdownManager dm;
@@ -35,6 +37,13 @@ public class Assignment : MonoBehaviour
         GameObject g = new GameObject();
         Music m = g.AddComponent<Music>();
         m.source = m.gameObject.AddComponent<AudioSource>();
+            AudioMixerGroup[] amg = mixer.FindMatchingGroups(string.Empty);
+            AudioMixerGroup a = amg[0];
+            for(int x = 0; x < amg.Length; x++){
+                if(amg[x].name.Equals("Music")) a = amg[x];
+            }
+            m.source.outputAudioMixerGroup = a;
+        m.source.playOnAwake = false;    
         m.source.clip = clip;
         AddEvents(m);
     }
@@ -51,6 +60,12 @@ public class Assignment : MonoBehaviour
         Sound s = node.AddComponent<Sound>();
         addSkeletonComponents(s,id);
         s.source = s.gameObject.AddComponent<AudioSource>();
+            AudioMixerGroup[] amg = mixer.FindMatchingGroups(string.Empty);
+            AudioMixerGroup a = amg[0];
+            for(int x = 0; x < amg.Length; x++){
+                if(amg[x].name.Equals("Sound")) a = amg[x];
+            }
+            s.source.outputAudioMixerGroup = a;
         s.source.playOnAwake = false;
         s.source.clip = clip;
         AddEvents(s,NodeCreator.Type.Sound);

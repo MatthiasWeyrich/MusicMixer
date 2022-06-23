@@ -10,10 +10,10 @@ public class Sound : Intermediary
         if(!paused) source.Play();
         StartCoroutine("waitUntil");
     }
-
     IEnumerator waitUntil(){
         while(paused) yield return null;
-        Invoke("Invokation",5f);
+        //while(source.isPlaying) yield return null;
+        Invoke("Invokation",source.clip.length-0.09f);
     }
 
     private void Invokation(){
