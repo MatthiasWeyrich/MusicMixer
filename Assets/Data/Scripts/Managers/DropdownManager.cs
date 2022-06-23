@@ -24,6 +24,7 @@ public class DropdownManager : MonoBehaviour
         addPredefinedHooksToDropdown();
         hookDropdown.onValueChanged.AddListener(delegate { handleHookDropdown(); });
         soundDropdown.onValueChanged.AddListener(delegate { handleSoundDropdown(); });
+        
     }
     public void AddNodeToDropdown(string soundName)
     {
