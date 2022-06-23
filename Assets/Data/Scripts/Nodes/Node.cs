@@ -37,6 +37,7 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else if(Input.GetMouseButton(1))
         {
+            drawing = false;
             DeleteLinesDueToMovement?.Invoke(id);
             for (int i = outgoingLines.Count - 1; i >= 0; i--)
             {
@@ -73,7 +74,7 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                     return;
                 }
             }
-            Destroy(skeleton.currentLine);
+            if(skeleton.currentLine.gameObject!=null) Destroy(skeleton.currentLine.gameObject);
         }
         drawing = false;
     }

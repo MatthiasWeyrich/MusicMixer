@@ -4,79 +4,97 @@ using System;
 public class Assignment : MonoBehaviour
 {
     private Action newMusicNotification;
+    private Action<string> addNodeToDropdown;
+
     [SerializeField] RuntimeManager rtm;
     [SerializeField] FileManager fm;
+    [SerializeField] DropdownManager dm;
+    NodeCreator nc;
+    private SoundStorage ss;
     [SerializeField] GameObject prefab;
     
     void OnEnable(){
+        nc = new NodeCreator(prefab);
+        ss = new SoundStorage();
         fm.requestedSoundLoaded += getLoadedSource;
         fm.requestedMusicLoaded += getLoadedMusic;
+        dm.nodeFromDropdown += getNodeFromDropdown;
+        addNodeToDropdown += dm.AddNodeToDropdown;
         createStartNode();
     }
-    void createStartNode(){
-        GameObject parent = Instantiate(prefab,new Vector3(0,0,0),Quaternion.identity);
-            // Instantiate node type based object
-        GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        child.transform.parent = parent.transform;
-        child.transform.position = parent.transform.position;
-        Start s = parent.AddComponent<Start>();
+    void createStartNode()
+    {
+        const NodeCreator.Type type = NodeCreator.Type.Start;
+        GameObject startNode = nc.createNewNode(null,type);
+        Start s = startNode.AddComponent<Start>();
         addSkeletonComponents(s,0);
-        //s.skeleton = s.GetComponent<Skeleton>();
-        //s.id = 0;
-        //s.instantiateNodeManager();
-        rtm.startCommand += s.OnStartCommand;
+        AddEvents(s,type);
     }
-    void addSkeletonComponents(Node node, int id){
-        node.skeleton = node.GetComponent<Skeleton>();
-        node.id = id;
-        node.instantiateNodeManager();
-    }
-
     void getLoadedMusic(AudioClip clip){
         newMusicNotification?.Invoke();
         GameObject g = new GameObject();
         Music m = g.AddComponent<Music>();
         m.source = m.gameObject.AddComponent<AudioSource>();
         m.source.clip = clip;
+        AddEvents(m);
+    }
+
+    void getLoadedSource(AudioClip clip,int id){
+        GameObject node = nc.createNewNode(clip, NodeCreator.Type.Sound);
+        addAudioComponent(node, clip, id);
+        addUIComponents(node);
+        addNodeToDropdown?.Invoke(clip.name);
+        ss.addToStorage(clip.name,clip);
+    }
+
+    void addAudioComponent(GameObject node, AudioClip clip, int id){
+        Sound s = node.AddComponent<Sound>();
+        addSkeletonComponents(s,id);
+        s.source = s.gameObject.AddComponent<AudioSource>();
+        s.source.playOnAwake = false;
+        s.source.clip = clip;
+        AddEvents(s,NodeCreator.Type.Sound);
+    }
+
+    void getNodeFromDropdown(string name, NodeCreator.Type type)
+    {
+        switch (type)
+        {
+            case NodeCreator.Type.Sound:
+                getLoadedSource(ss.getClipFromStorage(name),IDManager.id);
+                IDManager.id++;
+                break;
+        }
+    }
+
+    void addUIComponents(GameObject node){
+
+    }
+    void addSkeletonComponents<T>(T node, int id) where T : Node
+    {
+        node.skeleton = node.gameObject.GetComponent<Skeleton>();
+        node.id = id;
+        node.instantiateNodeManager();
+    }
+    void AddEvents<T>(T s, NodeCreator.Type type) where T : Node
+    {
+        rtm.startCommand += s.OnStartCommand;
+        if (!type.Equals(NodeCreator.Type.Start))
+        {
+            rtm.pauseCommmand += s.onStopCommand;
+            rtm.continueCommand += s.OnContinueCommand;
+            s.BeingDestroyedNotice += DeleteNode;
+            rtm.startCommand += s.OnStartCommand;
+        }
+    }
+    void AddEvents(Music m)
+    {
         rtm.startCommand += m.OnStartCommand;
         rtm.pauseCommmand += m.OnPauseCommand;
         rtm.continueCommand += m.OnContinueCommand;
         newMusicNotification += m.newMusicReact;
         m.onNewMusic += deleteMusic;
     }
-
-    void getLoadedSource(AudioClip clip,int id){
-        GameObject node = createSoundNode();
-        addAudioComponent(node, clip, id);
-        addUIComponents(node);
-    }
-
-    GameObject createSoundNode(){
-        GameObject parent = Instantiate(prefab,new Vector3(2,0,0),Quaternion.identity);
-        GameObject child = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        child.transform.parent = parent.transform;
-        child.transform.position = parent.transform.position;
-        return parent;
-    }
-
-    void addAudioComponent(GameObject node, AudioClip clip, int id){
-        Sound s = node.AddComponent<Sound>();
-        addSkeletonComponents(s,id);
-        //s.skeleton = node.GetComponent<Skeleton>();
-        s.source = s.gameObject.AddComponent<AudioSource>();
-        s.source.clip = clip;
-        //s.id = id;
-        //s.instantiateNodeManager();
-        rtm.pauseCommmand += s.onStopCommand;
-        rtm.continueCommand += s.OnContinueCommand;
-        s.BeingDestroyedNotice += DeleteNode;
-        rtm.startCommand = s.OnStartCommand;
-    }
-
-    void addUIComponents(GameObject node){
-
-    }
-
     void deleteMusic(Music m){
         rtm.startCommand -= m.OnStartCommand;
         rtm.pauseCommmand -= m.OnPauseCommand;

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class Start : Node
 {
     public override void Interact()

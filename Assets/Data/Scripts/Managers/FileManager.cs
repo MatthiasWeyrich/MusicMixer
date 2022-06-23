@@ -9,7 +9,6 @@ public class FileManager : MonoBehaviour
     public Action<AudioClip,int> requestedSoundLoaded;
     public Action<AudioClip> requestedMusicLoaded;
     private string path;
-    int i = 1,k = 0;
 
     public void OpenFileExplorer(){
         path = EditorUtility.OpenFilePanel("Available Sounds", "F:/Audio Done/", "mp3");
@@ -25,8 +24,11 @@ public class FileManager : MonoBehaviour
             yield return www.SendWebRequest();
             if(www.result == UnityWebRequest.Result.Success){
                 AudioClip requestedSound = DownloadHandlerAudioClip.GetContent(www);
-                assignClipName(requestedSound);
-                requestedSoundLoaded?.Invoke(requestedSound,i);
+                string[] s = www.url.Split("/");
+                int index = s.Length;
+                requestedSound.name = s[index-1];
+                requestedSoundLoaded?.Invoke(requestedSound,IDManager.id);
+                IDManager.id++;
             }
         }
     }
@@ -35,19 +37,11 @@ public class FileManager : MonoBehaviour
             yield return www.SendWebRequest();
             if(www.result == UnityWebRequest.Result.Success){
                 AudioClip requestedSound = DownloadHandlerAudioClip.GetContent(www);
-                assignMusicName(requestedSound);
+                string[] s = www.url.Split("/");
+                int index = s.Length;
+                requestedSound.name = s[index-1];
                 requestedMusicLoaded?.Invoke(requestedSound);
             }
         }
-    }
-
-    void assignMusicName(AudioClip requestedMusic){
-        requestedMusic.name = "Music"+k;
-        k++;
-    }
-
-    void assignClipName(AudioClip requestedSound){
-        requestedSound.name = "Sound"+i; 
-        i++;
     }
 }
