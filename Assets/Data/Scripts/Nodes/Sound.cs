@@ -7,7 +7,10 @@ public class Sound : Intermediary
     
     public override void Interact()
     {
-        if(!paused) source.Play();
+        if(!paused) { 
+            source.Play();
+            r.material.color = Color.magenta;
+        }
         StartCoroutine("waitUntil");
     }
     IEnumerator waitUntil(){
@@ -17,6 +20,7 @@ public class Sound : Intermediary
     }
 
     private void Invokation(){
+        r.material.color = defaultC;
         nm.notifyChildren();
     }
     

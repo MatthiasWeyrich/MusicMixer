@@ -9,7 +9,7 @@ public class NodeCreator
 
     protected class ObjectData
     {
-        public Renderer r { get; set; }
+        public Color c { get; set; }
         public PrimitiveType type { get; set; }
     }
 
@@ -42,7 +42,7 @@ public class NodeCreator
         GameObject parent = GameObject.Instantiate(prefab, new Vector3(1,0,0), Quaternion.identity);
         GameObject child = GameObject.CreatePrimitive(types[clip].type);
         Renderer r = child.GetComponent<Renderer>();
-        r = types[clip].r;
+        r.material.color = types[clip].c;
         child.transform.parent = parent.transform;
         child.transform.position = parent.transform.position;
         return parent;
@@ -79,6 +79,6 @@ public class NodeCreator
         Renderer r = child.GetComponent<Renderer>();
         Color c = Random.ColorHSV();
         r.material.color = c;
-        od.r = r;
+        od.c = c;
     }
 }

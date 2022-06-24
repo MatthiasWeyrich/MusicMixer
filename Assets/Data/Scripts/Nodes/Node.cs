@@ -14,8 +14,8 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     protected bool paused, drawing;
     public int id;
 
-    Renderer r;
-    Color defaultC;
+    protected Renderer r;
+    protected Color defaultC;
     Vector3 mouseOffset;
     
     protected virtual void OnEnable(){

@@ -11,7 +11,7 @@ public class FileManager : MonoBehaviour
     private string path;
 
     public void OpenFileExplorer(){
-        path = EditorUtility.OpenFilePanel("Available Sounds", "F:/Audio Done/", "mp3");
+        path = EditorUtility.OpenFilePanel("Available Sounds", "F:/Audio Done/A test/", "mp3");
         StartCoroutine(getSound());
     }
     public void OpenFileExplorerMusic(){
