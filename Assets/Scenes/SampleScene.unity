@@ -4219,11 +4219,7 @@ MonoBehaviour:
   fm: {fileID: 272408718}
   dm: {fileID: 1383333470}
   prefab: {fileID: 4120508242119600630, guid: 640384aefe4c26c4fb06b3df294925fc, type: 3}
-  hooks:
-  - {fileID: 5915823405479841791, guid: 9d590f6c9997ca84699f4d68bd0d0b5c, type: 3}
-  - {fileID: 4128268250394340506, guid: 8739ca9b5de33eb45bd16a4cbcec089e, type: 3}
-  modifier:
-  - {fileID: 366911934553469885, guid: d878396bb5677384ab532f2c381b2ff1, type: 3}
+  canvasPrefab: {fileID: 4134405994644455063, guid: eb998156f3f8a564e9a41102892b2b3f, type: 3}
 --- !u!1 &1233006143
 GameObject:
   m_ObjectHideFlags: 0

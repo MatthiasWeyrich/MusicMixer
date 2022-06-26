@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
+using TMPro;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class Assignment : MonoBehaviour
 {
@@ -17,8 +19,7 @@ public class Assignment : MonoBehaviour
     NodeCreator nc;
     private SoundStorage ss;
     [SerializeField] GameObject prefab;
-    [SerializeField] GameObject[] hooks;
-    [SerializeField] GameObject[] modifier;
+    [SerializeField] GameObject canvasPrefab;
     
     void OnEnable(){
         // dirty work and connecting the managers via c# events
@@ -158,6 +159,17 @@ public class Assignment : MonoBehaviour
         IDManager.id++;
     }
     void addUIComponents(GameObject node){
+        GameObject o = Instantiate(canvasPrefab);
+        if(node.TryGetComponent<Intermediary>(out Intermediary inter)){
+            o.transform.parent = node.transform;
+            o.transform.position = node.transform.position;
+            o.transform.position = new Vector3(o.transform.position.x+0.05f, o.transform.position.y-1.2f,o.transform.position.z);
+            inter.canvas = o.GetComponentInChildren<Canvas>();
+            inter.Button = inter.canvas.GetComponentInChildren<Button>();
+            inter.slider = inter.canvas.GetComponentInChildren<Slider>();
+            inter.text = inter.canvas.GetComponentInChildren<TextMeshProUGUI>();
+            inter.addListeners();
+        }
 
     }
     // assigning the node-internal skeleton component, assigning it the given id and instantiating its internal NodeManager object
