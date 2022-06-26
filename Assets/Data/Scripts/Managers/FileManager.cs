@@ -6,6 +6,8 @@ using System;
 
 public class FileManager : MonoBehaviour
 { 
+    // when either a music or sound file was loaded, we invoke the event with the corresponding soundclip
+    // if its a sound, we also provide an integer which will be the id of the sound node
     public Action<AudioClip,int> requestedSoundLoaded;
     public Action<AudioClip> requestedMusicLoaded;
     private string path;

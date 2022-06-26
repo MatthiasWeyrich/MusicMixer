@@ -5,7 +5,6 @@ public class Music : MonoBehaviour
 {
     public Action<Music> onNewMusic;
     public AudioSource source { get; set; }
-
     public void OnStartCommand()
     {
         source.Play();

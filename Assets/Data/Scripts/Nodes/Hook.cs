@@ -1,19 +1,22 @@
-public class Hook : Intermediary
+public abstract class Hook : Intermediary
 {
-    public override void Interact()
+    public override void onStopCommand()
     {
+        paused = true;
     }
 
     public override void OnContinueCommand()
     {
+        paused = false;
     }
 
     public override void OnStartCommand()
     {
+        paused = false;
     }
 
-    public override void onStopCommand()
+    protected void Invokation()
     {
+        nm.notifyChildren();
     }
-
 }

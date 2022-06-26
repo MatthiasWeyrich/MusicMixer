@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SoundStorage
 {
+    // this class is saving all uploaded sound files
+    // and returning them if needed
     private Dictionary<string, AudioClip> soundsDictionary;
 
     public SoundStorage()
