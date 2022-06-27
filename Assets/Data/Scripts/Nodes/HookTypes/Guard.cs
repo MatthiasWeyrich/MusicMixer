@@ -9,7 +9,7 @@ public class Guard : Hook
         if(!paused)
             if (Activated)
             {
-                if (Time.realtimeSinceStartup >= GuardinSeconds)
+                if (Time.realtimeSinceStartup >= value)
                 {
                     Invokation();
                 }

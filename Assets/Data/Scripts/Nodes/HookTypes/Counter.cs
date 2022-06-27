@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Counter : Hook
 {
-    // UI changable Variable
-    public float timeToWait = 5f;
-
     public override void Interact()
     {
         if(!paused)
         {
             if (Activated)
-                Invoke("Invokation", timeToWait);
+                Invoke("Invokation", value);
             else Invokation();
         }   
     }

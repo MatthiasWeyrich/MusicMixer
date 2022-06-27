@@ -59,8 +59,35 @@ public class DropdownManager : MonoBehaviour
     void handleModifierDropdown(){
         int index = modifierDropdown.value;
         string modifierName = modifierDropdown.options[index].text;
+        switch(modifierName){
+            case "Volume":
+                break;
+         //   case "Speed":
+         //       modifierName = "PitchSpeed"; break; 
+            case "Chorus Depth":
+                modifierName = "ChorusDepth"; break;
+            case "Chorus Rate":
+                modifierName = "ChorusRate"; break;
+            case "Echo":
+                modifierName = "EchoDryMix"; break;
+            case "Flange":
+                modifierName = "FlangeDryMix"; break;
+            case "Flange Depth":
+                modifierName = "FlangeDepth"; break;
+            case "Flange Rate":
+                modifierName = "FlangeRate"; break;
+            case "Octave":
+                modifierName = "ParamEQOctaveRange"; break;
+            case "Frequency Gain":
+                modifierName = "ParamEQFrequencyGain"; break;
+            case "Pitch":
+                modifierName = "PitchShifterPitch"; break;
+            case "Reverb": 
+                modifierName = "ReverbRoom"; break;
+        }
         nodeFromDropdown?.Invoke(modifierName,NodeCreator.Type.Modifier);
     }
+    
     // adding all predefined hooks to the list and dropdown
     void addPredefinedHooksToDropdown()
     {
@@ -73,11 +100,17 @@ public class DropdownManager : MonoBehaviour
     
     private void addPredefinedModifierToDropdown()
     {
-        modifier.Add("Amplitude");
+        modifier.Add("Volume");
+        //modifier.Add("Speed");
+        modifier.Add("Chorus Depth");
+        modifier.Add("Chorus Rate");
         modifier.Add("Echo");
-        modifier.Add("Fade");
+        modifier.Add("Flange");
+        modifier.Add("Flange Depth");
+        modifier.Add("Flange Rate");
+        modifier.Add("Octave");
+        modifier.Add("Frequency Gain");
         modifier.Add("Pitch");
-        modifier.Add("Priority");
         modifier.Add("Reverb");
 
         modifierDropdown.AddOptions(modifier);

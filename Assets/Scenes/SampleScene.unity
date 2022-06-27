@@ -4218,8 +4218,10 @@ MonoBehaviour:
   rtm: {fileID: 1997000626}
   fm: {fileID: 272408718}
   dm: {fileID: 1383333470}
+  am: {fileID: 2030890328}
   prefab: {fileID: 4120508242119600630, guid: 640384aefe4c26c4fb06b3df294925fc, type: 3}
   canvasPrefab: {fileID: 4134405994644455063, guid: eb998156f3f8a564e9a41102892b2b3f, type: 3}
+  canvasPrefabSound: {fileID: 4134405994644455063, guid: 900d7ca8bb2c42940b866502ce9048fb, type: 3}
 --- !u!1 &1233006143
 GameObject:
   m_ObjectHideFlags: 0
@@ -5020,6 +5022,7 @@ Transform:
   - {fileID: 1383333469}
   - {fileID: 272408717}
   - {fileID: 1997000625}
+  - {fileID: 2030890327}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5873,6 +5876,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b564ec3c95651240a9d75425dd527fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2030890326
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2030890327}
+  - component: {fileID: 2030890328}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2030890327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030890326}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1511023837}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2030890328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030890326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d7f5e0d07f9f904b98d5ba1d07fe085, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mixer: {fileID: 24100000, guid: c3c9654e3c1c78e4686eed0905f6928b, type: 2}
 --- !u!1 &2073794085
 GameObject:
   m_ObjectHideFlags: 0

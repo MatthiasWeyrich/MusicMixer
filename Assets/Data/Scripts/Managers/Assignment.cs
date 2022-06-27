@@ -16,10 +16,12 @@ public class Assignment : MonoBehaviour
     [SerializeField] RuntimeManager rtm;
     [SerializeField] FileManager fm;
     [SerializeField] DropdownManager dm;
+    [SerializeField] AudioManager am;
     NodeCreator nc;
     private SoundStorage ss;
     [SerializeField] GameObject prefab;
     [SerializeField] GameObject canvasPrefab;
+    [SerializeField] private GameObject canvasPrefabSound;
     
     void OnEnable(){
         // dirty work and connecting the managers via c# events
@@ -79,6 +81,7 @@ public class Assignment : MonoBehaviour
     void getLoadedSource(AudioClip clip,int id){
         // creating a sound node
         GameObject node = nc.createNewNode(clip.name, NodeCreator.Type.Sound);
+        node.name = clip.name;
         // adding components to the sound node
         addAudioComponent(node, clip, id);
         addUIComponents(node);
@@ -86,12 +89,12 @@ public class Assignment : MonoBehaviour
         addNodeToDropdown?.Invoke(clip.name);
         // adding the audioclip and its name to the list of sounds
         ss.addToStorage(clip.name,clip);
-        node.name = clip.name;
     }
     void addAudioComponent(GameObject node, AudioClip clip, int id){
         // adding the sound, skeleton and audiosource components
         Sound s = node.AddComponent<Sound>();
         addSkeletonComponents(s,id);
+        s.am = am;
         s.source = s.gameObject.AddComponent<AudioSource>();
         // assigning the audiosource the Sound mixer group
             AudioMixerGroup[] amg = mixer.FindMatchingGroups(string.Empty);
@@ -105,42 +108,127 @@ public class Assignment : MonoBehaviour
         // adding behavioural events
         AddEvents(s,NodeCreator.Type.Sound);
     }
-
     void addHookComponent(GameObject node, string name, int id)
     {
         // assigning specific hook components
         Hook h = null;
+        float setValue = 0f;
         switch (name)
         {
             case "Numerator":
                 h = node.AddComponent<Numerator>();
+                h.minValue = 1f;
+                h.maxValue = 5f;
+                setValue = 1f;
                 break;
             case "Counter":
                 h = node.AddComponent<Counter>();
+                h.minValue = 0f;
+                h.maxValue = 10f;
+                setValue = 0f;
                 break;
             case "Guard":
                 h = node.AddComponent<Guard>();
+                h.minValue = 10f;
+                h.maxValue = 120f;
+                setValue = 10f;
                 break;    
         }
         addSkeletonComponents(h,id);
         AddEvents(h, NodeCreator.Type.Hook);
+        addUIComponents(node);
         node.name = name;
+        h.slider.SetValueWithoutNotify(setValue);
+        h.value = setValue;
+        h.handleValueChange(h.value);
     }
     
     private void addModifierComponent(GameObject node, string name, int id)
     {
         Parameter p = null;
+        float setValue = 0f;
         switch(name){
-            case "Amplitude": p = node.AddComponent<Amplitude>(); break;
-            case "Echo": p = node.AddComponent<Echo>(); break;
-            case "Fade": p = node.AddComponent<Fade>(); break;
-            case "Pitch": p = node.AddComponent<Pitch>(); break;
-            case "Priority": p = node.AddComponent<Priority>(); break;
-            case "Reverb": p = node.AddComponent<Reverb>(); break;
+            case "Volume": 
+            p = node.AddComponent<Volume>(); 
+            p.minValue = -80f;
+            p.maxValue = 20f;
+            setValue = -10.0f;
+            break;
+            case "PitchSpeed": 
+            p = node.AddComponent<PitchSpeed>(); 
+            p.minValue = 1f;
+            p.maxValue = 150f;
+            setValue = 100f;
+            break;
+            case "ChorusDepth": 
+            p = node.AddComponent<ChorusDepth>();
+            p.minValue = 0f;
+            p.maxValue = 1f; 
+            setValue = 0f;
+            break;
+            case "ChorusRate": 
+            p = node.AddComponent<ChorusRate>(); 
+            p.minValue = 0f;
+            p.maxValue = 20f;
+            setValue = 0f;
+            break;
+            case "EchoDryMix": 
+            p = node.AddComponent<EchoDryMix>(); 
+            p.minValue = 0f;
+            p.maxValue = 1f;
+            setValue = 0f;
+            break;
+            case "FlangeDryMix": 
+            p = node.AddComponent<FlangeDryMix>(); 
+            p.minValue = 0f;
+            p.maxValue = 1f;
+            setValue = 0f;
+            break;
+            case "FlangeRate": 
+            p = node.AddComponent<FlangeRate>(); 
+            p.minValue = 0f;
+            p.maxValue = 20f;
+            setValue = 0f;
+            break;
+            case "FlangeDepth": 
+            p = node.AddComponent<FlangeDepth>(); 
+            p.minValue = 0.1f;
+            p.maxValue = 1f;
+            setValue = 0.01f;
+            break;
+            case "ParamEQOctaveRange": 
+            p = node.AddComponent<ParamEQOctaveRange>(); 
+            p.minValue = 0.2f;
+            p.maxValue = 5.0f;
+            setValue = 1f;
+            break;
+            case "ParamEQFrequencyGain": 
+            p = node.AddComponent<ParamEQFrequencyGain>(); 
+            p.minValue = 0.05f;
+            p.maxValue = 3.0f;
+            setValue = 1f;
+            break;
+            case "PitchShifterPitch": 
+            p = node.AddComponent<PitchShifterPitch>(); 
+            p.minValue = 0.5f;
+            p.maxValue = 2.0f;
+            setValue = 1f;
+            break;
+            case "ReverbRoom": 
+            p = node.AddComponent<ReverbRoom>(); 
+            p.minValue = -5000f;
+            p.maxValue = 0f;
+            setValue = -5000f;
+            break;
         }
         addSkeletonComponents(p,id);
         AddEvents(p, NodeCreator.Type.Modifier);
+        addUIComponents(node);
+        p.slider.SetValueWithoutNotify(setValue);
+        p.value = setValue;
+        p.handleValueChange(p.value);
         node.name = name;
+        p.paramName = name;
     }
     // this is the callback to the dropdown manager's event
     // called when the user has chosen a node from one of the dropdown menus
@@ -158,9 +246,21 @@ public class Assignment : MonoBehaviour
         }
         IDManager.id++;
     }
-    void addUIComponents(GameObject node){
-        GameObject o = Instantiate(canvasPrefab);
-        if(node.TryGetComponent<Intermediary>(out Intermediary inter)){
+    void addUIComponents(GameObject node)
+    {
+        GameObject o = null;
+        if (node.TryGetComponent<Sound>(out Sound s))
+        {
+            o = Instantiate(canvasPrefabSound);
+            o.transform.parent = node.transform;
+            o.transform.position = node.transform.position;
+            o.transform.position = new Vector3(o.transform.position.x + 0.05f, o.transform.position.y, o.transform.position.z);
+            s.canvas = o.GetComponentInChildren<Canvas>();
+            s.Button = s.canvas.GetComponentInChildren<Button>();
+            s.addListeners();
+        }
+        else if(node.TryGetComponent<Hook>(out Hook inter)){
+            o = Instantiate(canvasPrefab);;
             o.transform.parent = node.transform;
             o.transform.position = node.transform.position;
             o.transform.position = new Vector3(o.transform.position.x+0.05f, o.transform.position.y-1.2f,o.transform.position.z);
@@ -169,6 +269,17 @@ public class Assignment : MonoBehaviour
             inter.slider = inter.canvas.GetComponentInChildren<Slider>();
             inter.text = inter.canvas.GetComponentInChildren<TextMeshProUGUI>();
             inter.addListeners();
+        }
+        else if(node.TryGetComponent<Parameter>(out Parameter p)){
+            o = Instantiate(canvasPrefab);
+            o.transform.parent = node.transform;
+            o.transform.position = node.transform.position;
+            o.transform.position = new Vector3(o.transform.position.x+0.05f, o.transform.position.y-1.2f,o.transform.position.z);
+            p.canvas = o.GetComponentInChildren<Canvas>();
+            p.Button = p.canvas.GetComponentInChildren<Button>();
+            p.slider = p.canvas.GetComponentInChildren<Slider>();
+            p.text = p.canvas.GetComponentInChildren<TextMeshProUGUI>();
+            p.addListeners();
         }
 
     }

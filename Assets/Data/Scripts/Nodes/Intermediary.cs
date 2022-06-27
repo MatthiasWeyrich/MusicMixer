@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,11 +10,14 @@ public abstract class Intermediary : Node
     public Slider slider;
     public Button Button;
     public TextMeshProUGUI text;
+    public float minValue, maxValue;
     public float value;
-    public void addListeners()
+    public virtual void addListeners()
     {
         Button.onClick.AddListener(handleDeleteButton);
         slider.onValueChanged.AddListener(handleValueChange);
+        slider.minValue = minValue;
+        slider.maxValue = maxValue;
         canvas.enabled = false;
     }
     // Intermediary class between Nodes and more advanced types (sound, hook, modifier)
@@ -39,17 +43,20 @@ public abstract class Intermediary : Node
     public override void OnPointerEnter(PointerEventData eventData)
     {
         canvas.enabled = true;
-        base.OnPointerEnter(eventData);
     }
 
     public override void OnPointerExit(PointerEventData eventData)
     {
+        StartCoroutine(Countdown(2f));
+    }
+
+    IEnumerator Countdown(float f){
+        yield return new WaitForSeconds(f);
         canvas.enabled = false;
-        base.OnPointerExit(eventData);
     }
 
     public void handleDeleteButton(){
-        Debug.Log("Button clicked");
+        base.OnDeletion();
     }
     public void handleValueChange(float f)
     {

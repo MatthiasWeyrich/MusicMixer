@@ -27,17 +27,7 @@ public class CameraRay : MonoBehaviour
                     }
                 }
             }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                Transform go = hit.collider.gameObject.transform.parent;
-                if (go.TryGetComponent(out Node n))
-                {
-                    if (!go.TryGetComponent(out Start s))
-                    {
-                        n.OnDeletion();
-                    }
-                }
-            }
+            
         }
     }
 }

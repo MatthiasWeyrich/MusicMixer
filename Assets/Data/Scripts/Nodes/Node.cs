@@ -13,8 +13,8 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Action<Node> BeingDestroyedNotice;
     // Those two are for global toggling. We give the name of a node and send it to all other nodes. If they're the same name, their activation status is also toggled.
     // they are called by the boolean property. The boolean itself is changed by camera rays
-    public Action<string> beingDeactivatedNotice;
-    public Action<string> beingActivatedNotice;
+    public Action<string, int> beingDeactivatedNotice;
+    public Action<string, int> beingActivatedNotice;
 
     // personal skeleton component
     public Skeleton skeleton;
@@ -27,8 +27,9 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // this can't be implemented via Input.GetMouseButton(1), since OnEndDrag is called when the MouseButton was released
         protected bool paused, drawing;
         // activated determines, if a sound interacts or only sends the signal further
-        private bool activated = true;
+        public bool activated = true;
 
+        // Notiying all nodes that another node was deactivated.
         public virtual bool Activated
         {
             get => activated;
@@ -36,8 +37,8 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 activated = value;
                 if(activated)
-                    beingActivatedNotice?.Invoke(gameObject.name);
-                else beingDeactivatedNotice?.Invoke(gameObject.name);
+                    beingActivatedNotice?.Invoke(gameObject.name,id);
+                else beingDeactivatedNotice?.Invoke(gameObject.name,id);
             }
         }
         
@@ -148,15 +149,12 @@ public abstract class Node : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        if(activated) r.material.color = Color.red;
     }
     public virtual void OnDrop(PointerEventData eventData)
     {
-        if (activated) r.material.color = defaultC;
     }
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        if (activated) r.material.color = defaultC;
     }
 
     public void SetColor(Color c)

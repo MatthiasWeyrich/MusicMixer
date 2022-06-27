@@ -50,21 +50,23 @@ public class NodeManager
         notifyAllOfMovement?.Invoke(id);
     }
 
-    void deactivationChange(string name)
+    void deactivationChange(string name, int id)
     {
         foreach(var node in nodeList.Values)
-            if (node.name == name)
-            {
-                node.SetColor(Color.gray);
-            }
+                if (node.name == name)
+                {
+                    node.SetColor(Color.gray);
+                    if(node.id != id) node.activated = false;
+                }
     }
-    void activationChange(string name)
+    void activationChange(string name, int id)
     {
         foreach (var node in nodeList.Values)
-            if (node.name == name)
-            {
-                node.ResetColor();
-            }
+                if (node.name == name)
+                {
+                    node.ResetColor();
+                    if(node.id != id) node.activated = true;
+                }
                 
     }
 

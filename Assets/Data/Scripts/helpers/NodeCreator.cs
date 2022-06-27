@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class NodeCreator
 {
@@ -86,6 +88,7 @@ public class NodeCreator
                 break;
             case Type.Modifier:
                 child = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                child.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
                 od.type = PrimitiveType.Capsule;
                 break;
         }

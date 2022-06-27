@@ -6,13 +6,22 @@ using UnityEngine.EventSystems;
 public class Sound : Intermediary
 {
     public AudioSource source { get; set; }
+    public SoundData data;
+    public AudioManager am;
 
     Dictionary<int,Parameter> parameterList;
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        data = new SoundData();
         parameterList = new Dictionary<int, Parameter>();
+
+    }
+    public override void addListeners()
+    {
+        Button.onClick.AddListener(handleDeleteButton);
+        canvas.enabled = false;
     }
     public override void Interact()
     {
@@ -22,7 +31,9 @@ public class Sound : Intermediary
             return;
         }
         if(!paused) { 
-            source.Play();
+            data.prepareData(parameterList);
+            am.playSound(source,data);
+            data.clearDictionary();
             r.material.color = Color.magenta;
         }
         StartCoroutine("waitUntil");
@@ -47,12 +58,6 @@ public class Sound : Intermediary
         {
             drawing = false;
             DeleteLinesDueToMovement?.Invoke(id);
-            // clearing the current parameterList since we've moved. Revertion itself happens as a result of the above event call, i.e. in RemoveInvolvedLines()
-            foreach (Parameter parameter in parameterList.Values)
-            {
-                parameter.onActivationNotice -= applyChangesToSource;
-                parameter.onDeactivationNotice -= revertChangesToSource;
-            }
             parameterList.Clear();
             for (int i = outgoingLines.Count - 1; i >= 0; i--)
             {
@@ -90,9 +95,6 @@ public class Sound : Intermediary
                         skeleton.currentLine.to = n.id;
                         outgoingLines.Add(skeleton.currentLine);
                         parameterList.Add(param.id,param);
-                        param.onActivationNotice += applyChangesToSource;
-                        param.onDeactivationNotice += revertChangesToSource;
-                        applyChangesToSource(param.id);
                         return;
                     }
                 }
@@ -106,15 +108,7 @@ public class Sound : Intermediary
     // Applying the changes of the Parameter to the source
     /// TODO
     /// -> Event called by the Parameter if value was changed by the user via the ui
-    private void applyChangesToSource(int id)
-    {
-        Debug.Log("Adding " + id);
-        parameterList[id].Interact();
-    }
 
-    private void revertChangesToSource(int id){
-        Debug.Log("Parameter with id "+id+" was removed");
-    }
 
     public override void RemoveInvolvedLines(int id)
     {
@@ -123,7 +117,6 @@ public class Sound : Intermediary
         if (id == this.id) return;
             // If a parameter was removed, we need to revert its changes to our source.
         if(parameterList.ContainsKey(id)){
-            revertChangesToSource(id);
             parameterList.Remove(id);
         }
         for (int i = outgoingLines.Count-1; i >=0; i--)

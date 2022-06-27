@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Numerator : Hook
 {
-    // UI changable Variable
-    public int _signalsRequired = 2;
     int signals = 0;
     public override void Interact()
     {
@@ -14,7 +12,7 @@ public class Numerator : Hook
             if (Activated)
             {
                 signals++;
-                if (signals >= _signalsRequired)
+                if (signals >= value)
                 {
                     signals = 0;
                     Invokation();
