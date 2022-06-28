@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47cb77268619f0f4f9f8552b2ab21c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linePrefab: {fileID: 3072725136826702183, guid: dcd69c4edbc82cd488cd0b81476c924f, type: 3}
+  _linePrefab: {fileID: 3072725136826702183, guid: dcd69c4edbc82cd488cd0b81476c924f, type: 3}
   currentLine: {fileID: 0}
-  lineRenderer: {fileID: 0}
-  linePositions: []
+  _linePositions: []
+  _outgoingLines: []
+  _id: 0

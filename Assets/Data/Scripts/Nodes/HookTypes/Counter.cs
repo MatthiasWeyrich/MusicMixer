@@ -6,10 +6,10 @@ public class Counter : Hook
 {
     public override void Interact()
     {
-        if(!paused)
+        if(!_paused)
         {
             if (Activated)
-                Invoke("Invokation", value);
+                Invoke("Invokation", cm._value);
             else Invokation();
         }   
     }

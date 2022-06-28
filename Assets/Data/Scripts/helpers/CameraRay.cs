@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraRay : MonoBehaviour
 {
-    private Camera cam;
+    private Camera _cam;
     void OnEnable()
     {
-        cam = GetComponent<Camera>();
+        _cam = GetComponent<Camera>();
     }
 
     void Update()
     {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (Input.GetKeyDown(KeyCode.I))

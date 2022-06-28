@@ -4214,14 +4214,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2914cde1a79b62c4c80606497f3ede3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mixer: {fileID: 24100000, guid: c3c9654e3c1c78e4686eed0905f6928b, type: 2}
+  _mixer: {fileID: 24100000, guid: c3c9654e3c1c78e4686eed0905f6928b, type: 2}
   rtm: {fileID: 1997000626}
   fm: {fileID: 272408718}
   dm: {fileID: 1383333470}
   am: {fileID: 2030890328}
-  prefab: {fileID: 4120508242119600630, guid: 640384aefe4c26c4fb06b3df294925fc, type: 3}
-  canvasPrefab: {fileID: 4134405994644455063, guid: eb998156f3f8a564e9a41102892b2b3f, type: 3}
-  canvasPrefabSound: {fileID: 4134405994644455063, guid: 900d7ca8bb2c42940b866502ce9048fb, type: 3}
+  _componentPrefab: {fileID: 4120508242119600630, guid: 640384aefe4c26c4fb06b3df294925fc, type: 3}
+  _canvasPrefab: {fileID: 4134405994644455063, guid: eb998156f3f8a564e9a41102892b2b3f, type: 3}
+  _canvasPrefabSound: {fileID: 4134405994644455063, guid: 900d7ca8bb2c42940b866502ce9048fb, type: 3}
 --- !u!1 &1233006143
 GameObject:
   m_ObjectHideFlags: 0

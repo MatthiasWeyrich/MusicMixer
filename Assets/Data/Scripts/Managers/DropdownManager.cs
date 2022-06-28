@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DropdownManager : MonoBehaviour
 {
     // when a Node was chosen from a dopdown, we invoke the event with the name of the node selected
-    public Action<string, NodeCreator.Type> nodeFromDropdown;
+    public Action<string, NodeType> nodeFromDropdown;
 
     [SerializeField] private TMP_Dropdown soundDropdown;
     [SerializeField] private TMP_Dropdown hookDropdown;
@@ -48,13 +48,13 @@ public class DropdownManager : MonoBehaviour
     {
         int index = soundDropdown.value;
         string soundName = soundDropdown.options[index].text;
-        nodeFromDropdown?.Invoke(soundName, NodeCreator.Type.Sound);
+        nodeFromDropdown?.Invoke(soundName, NodeType.Sound);
     }
     void handleHookDropdown()
     {
         int index = hookDropdown.value;
         string hookName = hookDropdown.options[index].text;
-        nodeFromDropdown?.Invoke(hookName,NodeCreator.Type.Hook);
+        nodeFromDropdown?.Invoke(hookName,NodeType.Hook);
     }
     void handleModifierDropdown(){
         int index = modifierDropdown.value;
@@ -85,7 +85,7 @@ public class DropdownManager : MonoBehaviour
             case "Reverb": 
                 modifierName = "ReverbRoom"; break;
         }
-        nodeFromDropdown?.Invoke(modifierName,NodeCreator.Type.Modifier);
+        nodeFromDropdown?.Invoke(modifierName,NodeType.Modifier);
     }
     
     // adding all predefined hooks to the list and dropdown

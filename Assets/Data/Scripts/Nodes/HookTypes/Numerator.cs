@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Numerator : Hook
 {
-    int signals = 0;
+    int _signals = 0;
     public override void Interact()
     {
-        if(!paused)
+        if(!_paused)
         {
             if (Activated)
             {
-                signals++;
-                if (signals >= value)
+                _signals++;
+                if (_signals >= cm._value)
                 {
-                    signals = 0;
+                    _signals = 0;
                     Invokation();
                 }
             }

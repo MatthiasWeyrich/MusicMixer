@@ -1,21 +1,12 @@
-using UnityEngine;
-
 public class Start : Node
 {
     public override void Interact()
     {
-        nm.notifyChildren();
+        nm.NotifyChildren();
     }
 
-    public override void onStopCommand()
-    { 
-        // supposed to be empty
-    }
-
-    public override void OnContinueCommand()
-    {
-        // supposed to be empty
-    }
+    public override void onStopCommand(){}
+    public override void OnContinueCommand(){}
 
     public override void OnStartCommand()
     {

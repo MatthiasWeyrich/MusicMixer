@@ -2,18 +2,20 @@ using System.Collections.Generic;
 
 public class SoundData
 {
-    public SoundData() {
-        clearDictionary();
+    public SoundData()
+    {
+        parameters = new Dictionary<string, float>();
+        ClearDictionary();
     }
     public Dictionary<string,float> parameters;
 
-    public void prepareData(Dictionary<int,Parameter> param){
+    public void PrepareData(Dictionary<int,Parameter> param){
         foreach(Parameter p in param.Values){
-            if(p.Activated) parameters[p.paramName] = p.value;
+            if(p.Activated) parameters[p._paramName] = p.cm._value;
         }
     }
 
-    public void clearDictionary(){
+    public void ClearDictionary(){
         parameters = new Dictionary<string, float>(); 
         parameters.Add("Volume", -10f); // in decibals, from -80db to 20db
         //parameters.Add("PitchSpeed",100f); // in percent, from 1% to 150%

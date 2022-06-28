@@ -3,17 +3,17 @@ using UnityEngine;
 using System;
 public class RuntimeManager : MonoBehaviour
 {
-    public Action startCommand;
-    public Action pauseCommmand;
-    public Action continueCommand;
+    public Action StartCommand;
+    public Action PauseCommmand;
+    public Action ContinueCommand;
     public void OnStartButton(){
-        startCommand?.Invoke();
+        StartCommand?.Invoke();
     }
 
     public void OnPauseButton(){
-        pauseCommmand?.Invoke();
+        PauseCommmand?.Invoke();
     }
     public void OnContinueButton(){
-        continueCommand?.Invoke();
+        ContinueCommand?.Invoke();
     }
 }

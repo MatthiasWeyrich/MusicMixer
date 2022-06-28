@@ -6,10 +6,10 @@ public class Guard : Hook
     public float GuardinSeconds = 20f;
     public override void Interact()
     {
-        if(!paused)
+        if(!_paused)
             if (Activated)
             {
-                if (Time.realtimeSinceStartup >= value)
+                if (Time.realtimeSinceStartup >= cm._value)
                 {
                     Invokation();
                 }

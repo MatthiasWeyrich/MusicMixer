@@ -3,20 +3,20 @@ using System;
 
 public class Music : MonoBehaviour
 {
-    public Action<Music> onNewMusic;
-    public AudioSource source { get; set; }
+    public Action<Music> OnNewMusic;
+    public AudioSource _source { get; set; }
     public void OnStartCommand()
     {
-        source.Play();
+        _source.Play();
     }
-    public void newMusicReact(){
-        onNewMusic?.Invoke(this);
+    public void NewMusicReact(){
+        OnNewMusic?.Invoke(this);
     }
     public void OnPauseCommand(){
-        source.Pause();
+        _source.Pause();
     }
     public void OnContinueCommand(){
-        source.Play();
+        _source.Play();
     }
 
 }

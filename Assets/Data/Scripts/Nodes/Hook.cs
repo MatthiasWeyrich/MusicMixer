@@ -1,22 +1,23 @@
 public abstract class Hook : Intermediary
 {
+    public CanvasManager cm;
     public override void onStopCommand()
     {
-        paused = true;
+        _paused = true;
     }
 
     public override void OnContinueCommand()
     {
-        paused = false;
+        _paused = false;
     }
 
     public override void OnStartCommand()
     {
-        paused = false;
+        _paused = false;
     }
 
     protected void Invokation()
     {
-        nm.notifyChildren();
+        nm.NotifyChildren();
     }
 }
