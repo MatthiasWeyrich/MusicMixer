@@ -4,14 +4,16 @@ using System;
 
 public class NodeManager
 {
-    // If a Node is moved, all connections that node are removed, regardless of them outgoing or incoming.
-    // Since it is not enough for the moved Node to destroy all its outgoing connections ...
-    // we have to tell all other nodes that a node has moved and to remove all connections with that node as destination
+    // If a <Node> is moved or destroyed, all lines that involve the <Node>
+    // Since a node only ever retains information about its outgoing lines,
+    // we need to notify all other nodes to inspect their lists and remove lines with the <Node> as destination 
     private static Action<int> NotifyAllOfMovement;
-    // list of all nodes
+
+    // List of all nodes
     private static Dictionary<int,Node> _nodeList;
-    // each Node adds a child to the set when a new outgoing line is created
+    // A node's children it sends signals to
     private HashSet<int> _children;
+
     public NodeManager(Node node){
         if(_nodeList==null) 
             _nodeList = new Dictionary<int, Node>();
@@ -29,7 +31,7 @@ public class NodeManager
     }
     public void AddChild(int id) => _children.Add(id);
 
-    // after a node has Interacted, its calling all its _children that it's their turn
+    // After a node has interacted, it signals all its children
     public void NotifyChildren()
     {
         foreach (int id in _children)
@@ -38,11 +40,7 @@ public class NodeManager
         }
     }
 
-    // If a Node has moved, this function is invoked
-    // its given the id of the moved node and since all connections to that moved node are gone,
-    // we remove it form every possible _children list
-    // we also clear the _children list of the moved node
-    // afterwards, we call the event to signal all Nodes, to remove all connections to the node and destroy all corresponding line game objects
+    // Direct delegate for the <DeleteLinesDueToMovement> in the skeleton class
     void GlobalMovementChange(int id){
         foreach (var node in _nodeList.Values)
         {
@@ -52,6 +50,7 @@ public class NodeManager
         NotifyAllOfMovement?.Invoke(id);
     }
 
+    // Direct delegate for the <BeingDeactivatedNotice> in the node class
     void DeactivationChange(string name, int id)
     {
         foreach(var node in _nodeList.Values)
@@ -61,6 +60,8 @@ public class NodeManager
                     if(node.sk._id != id) node._activated = false;
                 }
     }
+
+    // Direct delegate for the <BeingActivatedNotice> in the node class
     void ActivationChange(string name, int id)
     {
         foreach (var node in _nodeList.Values)
@@ -72,6 +73,7 @@ public class NodeManager
                 
     }
 
+    // Nodes send themselves here via their <BeingDestroyedNotice> event to be destroyed
     void NodeDestruction(Node node)
     {
         NotifyAllOfMovement -= node.sk.RemoveInvolvedLines;

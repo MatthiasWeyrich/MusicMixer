@@ -3,10 +3,12 @@ using System;
 
 public abstract class Node : MonoBehaviour
 {
-    // if a node is destroyed by the user, the node sends itself to the Assignment class in order to be destroyed
+    // Notifying all ndes that <Node> has been destroyed and subsequently all lines to that <Node> must be removed
+    // direct delegate => NodeManager
     public Action<Node> BeingDestroyedNotice;
-    // Those two are for global toggling. We give the name of a node and send it to all other nodes. If they're the same name, their activation status is also toggled.
-    // they are called by the boolean property. The boolean itself is changed by camera rays
+
+    // When a specific node is deactivated / or reactivated, all nodes of the same type are also deactivated / reactivated. 
+    // direct delegate => NodeManager
     public Action<string, int> BeingDeactivatedNotice;
     public Action<string, int> BeingActivatedNotice;
 
@@ -14,23 +16,23 @@ public abstract class Node : MonoBehaviour
     public VisualManager vm;
     public DragManager dm;
     public NodeManager nm;
-    // paused whether to Interact() or not
-    // drawing to make differentiation between right click (movement) and left click (drawing)
-    // this can't be implemented via Input.GetMouseButton(1), since OnEndDrag is called when the MouseButton was released
+
     protected bool _paused;
-    // activated determines, whether a sound interacts or only sends the signal further
     public bool _activated = true;
     public virtual bool Activated
     {
         get => _activated;
         set
         {
+            // Firing activation events on change
             _activated = value;
             if(_activated)
                 BeingActivatedNotice?.Invoke(gameObject.name,sk._id);
             else BeingDeactivatedNotice?.Invoke(gameObject.name,sk._id);
         }
     }
+
+    // Firing the deletion event and removing all outgoing lines
     public void OnDeletion(){
         for (int i = sk._outgoingLines.Count - 1; i >= 0; i--)
         {

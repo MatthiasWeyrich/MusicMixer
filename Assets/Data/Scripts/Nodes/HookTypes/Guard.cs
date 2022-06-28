@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class Guard : Hook
 {
-    // UI changable Variable
-    public float GuardinSeconds = 20f;
     public override void Interact()
     {
         if(!_paused)

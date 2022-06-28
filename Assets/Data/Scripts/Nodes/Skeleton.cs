@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class Skeleton : MonoBehaviour
 {
-    // Every Node has this component
     // This is responsible for creating line objects between two nodes
     // Line objects are LineRenderer Objects
     [SerializeField] GameObject _linePrefab;
@@ -11,14 +10,16 @@ public class Skeleton : MonoBehaviour
     public List<Vector2> _linePositions;
     LineRenderer _lineRenderer;
     EdgeCollider2D _edgeCollider;
+    // List of outgoing lines from a node
     public List<LineInteraction> _outgoingLines;
+
     public int _id;
 
     void OnEnable(){
         _outgoingLines = new List<LineInteraction>();
     }
 
-    // this creates a new line Object and instantiates it at mouse position
+    // On left click on a node, this creates a new line object and instantiates it at mouse position
     public void CreateLine(Vector3 mouseWP){
         GameObject current = Instantiate(_linePrefab, Vector3.zero, Quaternion.identity);
         currentLine = current.AddComponent<LineInteraction>();
@@ -31,17 +32,19 @@ public class Skeleton : MonoBehaviour
         _lineRenderer.SetPosition(1,_linePositions[1]);
         _edgeCollider.points = _linePositions.ToArray();
     }
-    // during a nodes drag function, this will continuously be called to add positions the line is made up
+    
+    // During dragging, this will continuously be called to continue the line
     public void UpdateLine(Vector2 newPosition){
         _linePositions.Add(newPosition);
         _lineRenderer.positionCount++;
         _lineRenderer.SetPosition(_lineRenderer.positionCount-1,newPosition);
         _edgeCollider.points = _linePositions.ToArray();
     }
+    
+    // If a node fired it's destruction event this method is called by the NodeManager
+    // Nodes will destroy all their outgoing lines that have <id> as their destination
     public virtual void RemoveInvolvedLines(int id)
     {
-        // this is called by the NodeManager if it got a notice that a node has moved
-        // all nodes will check their outgoing lines and remove and destroy all that have the moved nodes id as their destination
         if (id == _id) return;
         for (int i = _outgoingLines.Count-1; i >=0; i--)
         {

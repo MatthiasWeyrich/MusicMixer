@@ -1,13 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using TMPro;
-using UnityEngine.UI;
 
 public class DropdownManager : MonoBehaviour
 {
-    // when a Node was chosen from a dopdown, we invoke the event with the name of the node selected
+    // When a node was chosen from a dropdown, we invoke the event with the name of the node selected
+    // recipient is the Assignment class
     public Action<string, NodeType> nodeFromDropdown;
 
     [SerializeField] private TMP_Dropdown soundDropdown;
@@ -59,6 +58,8 @@ public class DropdownManager : MonoBehaviour
     void handleModifierDropdown(){
         int index = modifierDropdown.value;
         string modifierName = modifierDropdown.options[index].text;
+        // Names in the Modifier Dropdown have other names than in code.
+        // Reassigning them to align them with their names in code.
         switch(modifierName){
             case "Volume":
                 break;
@@ -88,7 +89,6 @@ public class DropdownManager : MonoBehaviour
         nodeFromDropdown?.Invoke(modifierName,NodeType.Modifier);
     }
     
-    // adding all predefined hooks to the list and dropdown
     void addPredefinedHooksToDropdown()
     {
         hooks.Add("Counter");

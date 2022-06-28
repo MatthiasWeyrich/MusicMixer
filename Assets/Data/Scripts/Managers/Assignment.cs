@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class Assignment : MonoBehaviour
 {
-    // if there's an existing piece of music and we choose a new one, the old one is removed
-    // this events calls the existing music to destroy itself
+    // If there's an existing piece of music and we choose a new one, the old one is removed.
+    // This events calls the existing music to destroy itself
     private Action NewMusicNotification;
-    // if a new sound was loaded by the filemanager, we'll notify the dropdown manager
+    // If a new sound was loaded by the filemanager, we'll notify the dropdown manager
     private Action<string> AddNodeToDropdown;
 
     [SerializeField] AudioMixer _mixer;
@@ -41,13 +41,17 @@ public class Assignment : MonoBehaviour
         AddEvents(s,type);
     }
     void GetLoadedMusic(AudioClip clip){
-        // invoking the music destruction event
+        /*
+            Signaling possible music objects to destroy themselves,
+            creating a new music object,
+            assigning it the uploaded sound file,
+            assigning it a mixer group,
+            and assigning it some reactional events
+        */
         NewMusicNotification?.Invoke();
         GameObject g = new GameObject();
-        // adding a music and audio _source component to the gameobject
         Music m = g.AddComponent<Music>();
         m._source = m.gameObject.AddComponent<AudioSource>();
-        // choosing the Music _mixer group
         AudioMixerGroup[] amg = _mixer.FindMatchingGroups(string.Empty);
         AudioMixerGroup a = amg[0];
         for(int x = 0; x < amg.Length; x++){
@@ -56,8 +60,29 @@ public class Assignment : MonoBehaviour
         m._source.outputAudioMixerGroup = a;
         m._source.playOnAwake = false;    
         m._source.clip = clip;
-        // assigning the music behavioural events like playback on playbutton press 
         AddEvents(m);
+    }
+
+    void GetLoadedSource(AudioClip clip){
+        GameObject node = nc.CreateNewNode(clip.name, NodeType.Sound);
+        Sound s = ApplySoundBasics(node);
+        node.name = clip.name;
+        AddAudioComponent(s, clip);
+        AddNodeToDropdown?.Invoke(clip.name);
+        ss.AddToStorage(clip.name,clip);
+    }
+    void AddAudioComponent(Sound s, AudioClip clip){
+        // Assigning audio source and mixer group to the sound node
+        s._source = s.gameObject.AddComponent<AudioSource>();
+        AudioMixerGroup[] amg = _mixer.FindMatchingGroups(string.Empty);
+        AudioMixerGroup a = amg[0];
+        for(int x = 0; x < amg.Length; x++){
+            if(amg[x].name.Equals("Sound")) a = amg[x];
+        }
+        s._source.outputAudioMixerGroup = a;
+        s._source.playOnAwake = false;
+        s._source.clip = clip;
+        AddEvents(s,NodeType.Sound);
     }
     void GetSecondaryNode(string name, NodeType type)
     {
@@ -70,31 +95,9 @@ public class Assignment : MonoBehaviour
         {
             ApplyParameterBasics(node, name);
         }
+    }
 
-    }
-    void GetLoadedSource(AudioClip clip){
-        GameObject node = nc.CreateNewNode(clip.name, NodeType.Sound);
-        Sound s = ApplySoundBasics(node);
-        node.name = clip.name;
-        AddAudioComponent(s, clip);
-        AddNodeToDropdown?.Invoke(clip.name);
-        ss.AddToStorage(clip.name,clip);
-    }
-    void AddAudioComponent(Sound s, AudioClip clip){
-        s._source = s.gameObject.AddComponent<AudioSource>();
-        AudioMixerGroup[] amg = _mixer.FindMatchingGroups(string.Empty);
-        AudioMixerGroup a = amg[0];
-        for(int x = 0; x < amg.Length; x++){
-            if(amg[x].name.Equals("Sound")) a = amg[x];
-        }
-        s._source.outputAudioMixerGroup = a;
-        s._source.playOnAwake = false;
-        s._source.clip = clip;
-        AddEvents(s,NodeType.Sound);
-    }
-    // this is the callback to the dropdown manager's event
-    // called when the user has chosen a node from one of the dropdown menus
-    // we'll create different nodes based on what was chosen
+    // Direct delegate to the dropdown managers event fired when a node was chosen from the dropdown
     void getNodeFromDropdown(string name, NodeType type)
     {
         switch (type)
@@ -108,6 +111,7 @@ public class Assignment : MonoBehaviour
         }
         IDManager.id++;
     }
+
     void AddEvents<T>(T s, NodeType type) where T : Node
     {
         rtm.StartCommand += s.OnStartCommand;
@@ -127,9 +131,7 @@ public class Assignment : MonoBehaviour
         NewMusicNotification += m.NewMusicReact;
         m.OnNewMusic += deleteMusic;
     }
-    // Nodes and Music will call this method with themselves as reference
-    // their callbacks to this class's events will be unassigned and the object destroyed
-    // NOTE: THIS MIGHT BE INCOMPLETE. MAKE SURE ALL OUTGOING AND INCOMING LINES ARE DESTROYED BEFOREHAND
+
     void deleteMusic(Music m){
         rtm.StartCommand -= m.OnStartCommand;
         rtm.PauseCommmand -= m.OnPauseCommand;
@@ -137,6 +139,10 @@ public class Assignment : MonoBehaviour
         NewMusicNotification -= m.NewMusicReact;
         Destroy(m.gameObject);
     }
+
+    // Nodes will call this method with themselves as reference
+    // their callbacks to this class's events will be unassigned and the object destroyed
+    // NOTE: THIS MIGHT BE INCOMPLETE. MAKE SURE ALL OUTGOING AND INCOMING LINES ARE DESTROYED BEFOREHAND
     void DeleteNode(Node n){
         rtm.PauseCommmand -= n.onStopCommand;
         rtm.ContinueCommand -= n.onStopCommand;
@@ -144,7 +150,10 @@ public class Assignment : MonoBehaviour
         Destroy(n.gameObject);
     }
 
-
+    /*
+        Following methods are purely assignment of relevant classes
+        and callback assignments
+    */
     Start ApplyStartBasics(GameObject go){
         Start s = go.AddComponent<Start>();
         s.sk = s.gameObject.GetComponent<Skeleton>();

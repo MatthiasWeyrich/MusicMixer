@@ -5,13 +5,13 @@ using UnityEngine.EventSystems;
 
 public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    // If a Node was moved, all incoming and outgoing connections are removed and all corresponding drawn line (LineInteraction) game objects are destroyed
-    // we'll tell all nodes in the scene to remove all connections they have that include the node that called this event (given by the id)
-    // the same event is called when a node is removed from the scene by the user 
+    // Notifying all ndes that <Node> has been destroyed and subsequently all lines to that <Node> must be removed
+    // direct delegate => NodeManager
+    // This seems redundant to the event <BeingDestroyedNotice> in the node class
     public Action<int> DeleteLinesDueToMovement;
-    // mouse offset for when we drag a node
-    // if we didn't subtract the mouse offset when dragging, the node would always snap its center to the mouse position
+
     public Node node;
+    // Mouse offset so the dragged object's center won't snap to the mouse position
     protected Vector3 _mouseOffset;
     protected bool _drawing;
     protected void OnEnable() => node = GetComponent<Node>();
@@ -20,6 +20,7 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         node.sk.currentLine.from = node.sk._id;
         _drawing = true;
     }
+    // When a node is moved, we fire the event and remove all outgoing lines the firing node has
     protected void MovementStart(){
         _drawing = false;
         DeleteLinesDueToMovement?.Invoke(node.sk._id);
@@ -32,13 +33,12 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
     public virtual void OnBeginDrag(PointerEventData eventData)
     {
-        // getting the offset from the center of the node to the actual position the node was clicked
         _mouseOffset = transform.position - GetMouseWorldPos();
-            // if left mouse button, we draw a new line
+            // Drawing a new line / making a new connections
         if(Input.GetMouseButton(0)) {
             InstantiateLine();
         }
-            // else we move the line and thus need to destroy all connection -> invoking the event and destroying all outgoing lines
+            // Moving the node in the scene
         else if(Input.GetMouseButton(1))
         {
             MovementStart();
@@ -46,27 +46,24 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
     public virtual void OnDrag(PointerEventData eventData)
     {
-        // updating the line, drawing, along the mouse position
+        // Continuously drawing the line
         if(Input.GetMouseButton(0)){
             Vector2 position = GetMouseWorldPos();
-                // Drawing a line ONLY if it's more than 0.2 away from the last point we're drawn
+                // Making sure that a new position of the line has a minimum distance
             if(Vector2.Distance(position, node.sk._linePositions[node.sk._linePositions.Count-1]) > .2f)
                 node.sk.UpdateLine(position);
         }
-        // just moving the node along the mouse position
         else if (Input.GetMouseButton(1))
         {
-            // Deletion of a Node is outsourced to inheriting classes that override this method since we never want a StartNode to be deleted.
             transform.position = GetMouseWorldPos() - _mouseOffset;
         }
     }
     public virtual void OnEndDrag(PointerEventData eventData)
     {
-        // nothing happens if we're not drawing
-        // if we're drawing however,
-        // we check if any object is below the mouse courser at the moment of release
-        // if that's the case, we check whether its a valid node
-        // and then add it to the lines "to" field
+
+        // When the user stops drawing the line.
+        // If there's a valid node, we add the line to our list
+        // else, the line is destroyed
         if (_drawing)
         {
             List<GameObject> p = eventData.hovered;
@@ -78,18 +75,17 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     return;
                 }
             }
-            // if no valid game object was hit, we destroy the line instead
             if(node.sk.currentLine.gameObject!=null) Destroy(node.sk.currentLine.gameObject);
         }
         _drawing = false;
     }
+    
     protected void OnObjectHover(Intermediary i){
         node.nm.AddChild(i.sk._id);
         node.sk.currentLine.to = i.sk._id;
         node.sk._outgoingLines.Add(node.sk.currentLine);
     }
-    // since we can interact with objects via our mouse, which is given in 2d coordinates, we need to transform these 2d coordinates into 3d
-    // this only works because the camera is set to orthogonal projection
+    // Since mouse coordinates are 2D, transforming them to 3D
     protected Vector3 GetMouseWorldPos()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

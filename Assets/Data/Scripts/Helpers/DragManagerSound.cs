@@ -6,16 +6,14 @@ public class DragManagerSound : DragManager
 {
     public override void OnBeginDrag(PointerEventData eventData)
     {
-        // getting the offset from the center of the node to the actual position the node was clicked
         _mouseOffset = transform.position - GetMouseWorldPos();
-            // if left mouse button, we draw a new line
         if(Input.GetMouseButton(0)) {
             InstantiateLine();
         }
-            // else we move the line and thus need to destroy all connection -> invoking the event and destroying all outgoing lines
         else if(Input.GetMouseButton(1))
         {
             MovementStart();
+            // Sound Node also needs to remove all connections to modifier nodes
             node.GetComponent<Sound>()._parameterList.Clear();
         }
     }
@@ -31,6 +29,7 @@ public class DragManagerSound : DragManager
                     OnObjectHover(i);
                     return;
                 }
+                    // Making modifier nodes a valid target
                 else{
                     if(g.TryGetComponent(out Parameter p)){
                         OnObjectHover(p);
@@ -38,16 +37,15 @@ public class DragManagerSound : DragManager
                     }
                 }
             }
-            // if no valid game object was hit, we destroy the line instead
             if(node.sk.currentLine.gameObject!=null) Destroy(node.sk.currentLine.gameObject);
         }
         _drawing = false;
     }
+
+    // Overloading the method to include modifier nodes
     private void OnObjectHover(Parameter p){
         node.nm.AddChild(p.sk._id);
-        node.sk.currentLine.to 
-            = 
-            p.sk._id;
+        node.sk.currentLine.to = p.sk._id;
         node.sk._outgoingLines.Add(node.sk.currentLine);
         node.GetComponent<Sound>()._parameterList.Add(p.sk._id,p);
     }

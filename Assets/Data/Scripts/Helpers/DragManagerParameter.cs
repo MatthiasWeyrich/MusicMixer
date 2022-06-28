@@ -3,9 +3,9 @@ using UnityEngine.EventSystems;
 
 public class DragManagerParameter : DragManager
 {
-    // overriding since you can't draw lines from a Parameter.
+    // Overriding since you can't draw lines from a parameter node.
     // You can only connect sounds with parameters when starting from a sound node
-    // this restriction is set for simplicity reasons and ease of development
+    // this restriction is set for ease of development
     public override void OnBeginDrag(PointerEventData eventData)
     {
         _mouseOffset = transform.position - GetMouseWorldPos();
@@ -15,7 +15,6 @@ public class DragManagerParameter : DragManager
         }
     }
     
-    // same reasoning as above. One shouldn't be able to draw a line that's outgoing from a parameter
     public override void OnDrag(PointerEventData eventData)
     {
         if (Input.GetMouseButton(1))

@@ -7,14 +7,19 @@ public class SoundData
         parameters = new Dictionary<string, float>();
         ClearDictionary();
     }
+
+    // This is a collection of all exposed parameters of the music mixer that the user may influence with modifiers
     public Dictionary<string,float> parameters;
 
+    // Before sending the sound to be played and the parameters to change the audio mixer for that moment of playback,
+    // this applies the changes to the sound that modifiers that are connected to the sound have
     public void PrepareData(Dictionary<int,Parameter> param){
         foreach(Parameter p in param.Values){
             if(p.Activated) parameters[p._paramName] = p.cm._value;
         }
     }
 
+    // The collection of parameters is reset to their defaults after every playback
     public void ClearDictionary(){
         parameters = new Dictionary<string, float>(); 
         parameters.Add("Volume", -10f); // in decibals, from -80db to 20db

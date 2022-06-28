@@ -6,12 +6,12 @@ using System;
 
 public class FileManager : MonoBehaviour
 { 
-    // when either a music or sound file was loaded, we invoke the event with the corresponding soundclip
-    // if its a sound, we also provide an integer which will be the id of the sound node
+    // When either a music or a sound file was loaded, we invoke the event with the corresponding soundclip
     public Action<AudioClip> RequestedSoundLoaded;
     public Action<AudioClip> RequestedMusicLoaded;
     private string _path;
 
+    // Opening up file explorers
     public void OpenFileExplorer(){
         _path = EditorUtility.OpenFilePanel("Available Sounds", "F:/Audio Done/A test/", "mp3");
         StartCoroutine(GetSound());
@@ -21,6 +21,7 @@ public class FileManager : MonoBehaviour
         StartCoroutine(GetMusic());
     }
 
+    // Two methods to upload the chosen mp3
     IEnumerator GetSound(){
         using(UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(_path,AudioType.MPEG)){
             yield return www.SendWebRequest();

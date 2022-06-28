@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SoundStorage
 {
-    // this class is saving all uploaded sound files
-    // and returning them if needed
+    // Saving all uploaded sound files and returning them if need be
+    // As always, the string <name> reflects the uniqueness of a node / sound
     private Dictionary<string, AudioClip> _soundsDictionary;
 
     public SoundStorage() => _soundsDictionary = new Dictionary<string, AudioClip>();

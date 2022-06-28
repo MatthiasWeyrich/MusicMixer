@@ -8,6 +8,7 @@ public class Sound : Intermediary
     public CanvasBase cm;
     public SoundData data;
     public AudioManager am;
+    // List of modifiers connected to a sound node
     public Dictionary<int,Parameter> _parameterList;
     protected void OnEnable()
     {
@@ -17,30 +18,35 @@ public class Sound : Intermediary
     }
     public override void Interact()
     {
+        // If deactivated, send the signal
         if (!Activated)
         {
             Invokation();
             return;
         }
         if(!_paused) { 
+            // Updating the parameters we'll give to the music mixer based on modifiers in our list
             data.PrepareData(_parameterList);
+            // Sending parameters and sound to the audio manager and playing the sound
             am.PlaySound(_source,data);
+            // Reverting the parameters to default values
             data.ClearDictionary();
-            vm._r.material.color = Color.magenta;
+            // Effect during playback of the sound
+            vm.SetColor(Color.magenta);
         }
         StartCoroutine("waitUntil");
     }
+    // Waiting to notify connected children until sound has almost fully played back
     IEnumerator waitUntil(){
         while(_paused) yield return null;
         Invoke("Invokation",_source.clip.length-0.09f);
     }
         private void Invokation(){
-        if(Activated) vm._r.material.color = vm._defaultC;
+        if(Activated) vm.ResetColor();
         nm.NotifyChildren();
     }
 
-    // this is called by the NodeManager if it got a notice that a node has moved
-    // all nodes will check their outgoing lines and remove and destroy all that have the moved nodes id as their destination
+    // Extending and preceeding the skeleton class's method since sounds have special regards to modifier (parameter) nodes
     public void RemoveInvolvedLines(int id)
     {
         if (id == sk._id) return;

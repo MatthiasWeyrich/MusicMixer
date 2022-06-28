@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class NodeCreator
 {
+    // Gameobject with skeleton component
     GameObject _prefab;
+    // All unique nodes created so far
     Dictionary<string,ObjectData> _types;
+    // Container class to store data about color and representation a node should have
     protected class ObjectData
     {
         public Color c { get; set; }
@@ -17,26 +20,25 @@ public class NodeCreator
     }
     public GameObject CreateNewNode(string name, NodeType type){
         GameObject go = null;
-            // creating parent GameObject since its always the same
-            // the parent holds the Skeleton component
+            // Instantiating the skeleton prefab and assigning it an id
         GameObject parent = GameObject.Instantiate(_prefab, new Vector3(1, 0, 0), Quaternion.identity);
         parent.GetComponent<Skeleton>()._id = IDManager.id;
         IDManager.id++;
-        // Branching based on type
         switch (type){
             case NodeType.Start:
-                    // this only happens once at the start of the game
                 return FormStartNode();
             default:
                 if (_types.ContainsKey(name))
                 {
-                    // If this name is already part of a node that was at one point added to the scene, we'll take a copy of it from the dictionary
-                    // name could be either the name of a hook/modifier or the name of an uploaded sound file
+                    // A nodes name is always representative of it's type and makes statements about its uniqueness
+                    // A nodes name is either the name of an uploaded sound file, the name of a hook or the name of a modifier
+                    // Since the user is not limited to the amount of equivalent nodes they can place in the scene,
+                    // if there's a node with the same name, we'll take a copy of it from the dictionary
                     go = GetNodeFromDictionary(name,parent);
                 }
                 else
                 {
-                    // Such node does not already exists, so we create a new Node of that name/type, assign it a primitive and color, and add it to the dictionary
+                    // Such node does not already exists, so we create a new node with that name, assign it a primitive and color, and add it to the dictionary
                     ObjectData od = new ObjectData();
                     go = FormNode(type, od,parent);
                     _types.Add(name, od);
@@ -46,8 +48,7 @@ public class NodeCreator
     }
     private GameObject GetNodeFromDictionary(string name, GameObject parent)
     {
-        // Since we get here only if a Node with the same type (represented as string name) has at some point been added to the scene
-        // the child is assigned the color and primitive type of the corresponding ObjectData in the dictionary
+        // Assigning the node the same color and primitive as nodes that share the same name
         GameObject child = GameObject.CreatePrimitive(_types[name].type);
         Renderer r = child.GetComponent<Renderer>();
         r.material.color = _types[name].c;
@@ -66,7 +67,6 @@ public class NodeCreator
     }
     private GameObject FormNode(NodeType type, ObjectData od, GameObject parent)
     {
-            // Assigning a primitive based on its type and storing the information about that node's primitive in the ObjectData object
         GameObject child = null;
         switch (type)
         {
@@ -90,7 +90,6 @@ public class NodeCreator
         return parent;
     }
     private void AddColorToNode(GameObject child, ObjectData od){
-            // Assigning color to the new Node and storing the information in the data container object
         Renderer r = child.GetComponent<Renderer>();
         Color c = Random.ColorHSV();
         r.material.color = c;
