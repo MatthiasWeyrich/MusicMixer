@@ -10,6 +10,7 @@ public class Music : MonoBehaviour
     public void OnStartCommand()
     {
         _source.Play();
+        
     }
     public void NewMusicReact(){
         OnNewMusic?.Invoke(this);

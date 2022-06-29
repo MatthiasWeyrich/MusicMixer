@@ -7,12 +7,14 @@ public class CanvasBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 {
     public Canvas _canvas;
     public Button _button;
+    public Toggle _toggle;
 
     public float _value;
 
     public void AddListeners()
     {
         _button.onClick.AddListener(HandleDeleteButton);
+        _toggle.onValueChanged.AddListener(HandleDeactivationButton);
         _canvas.enabled = false;
     }
 
@@ -43,5 +45,9 @@ public class CanvasBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             t.OnDeletion();
         }
+    }
+    protected void HandleDeactivationButton(bool b){
+        if(b) gameObject.GetComponent<Node>().Activated = false;
+        else gameObject.GetComponent<Node>().Activated = true;
     }
 }

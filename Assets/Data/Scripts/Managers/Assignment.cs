@@ -28,7 +28,7 @@ public class Assignment : MonoBehaviour
         ss = new SoundStorage();
         fm.RequestedSoundLoaded += GetLoadedSource;
         fm.RequestedMusicLoaded += GetLoadedMusic;
-        dm.nodeFromDropdown += getNodeFromDropdown;
+        dm.NodeFromDropdown += getNodeFromDropdown;
         AddNodeToDropdown += dm.AddNodeToDropdown;
         CreateStartNode();
     }
@@ -175,6 +175,7 @@ public class Assignment : MonoBehaviour
         canvasPrefab.transform.position = new Vector3(canvasPrefab.transform.position.x+0.05f, canvasPrefab.transform.position.y-1.2f,canvasPrefab.transform.position.z);
         s.cm._canvas = canvasPrefab.GetComponentInChildren<Canvas>();
         s.cm._button = canvasPrefab.GetComponentInChildren<Button>();
+        s.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
         s.cm.AddListeners();
         s.nm = new NodeManager(s);
         s.am = am;
@@ -212,6 +213,7 @@ public class Assignment : MonoBehaviour
         h.cm._button = canvasPrefab.GetComponentInChildren<Button>();
         h.cm._slider = canvasPrefab.GetComponentInChildren<Slider>();
         h.cm._text = canvasPrefab.GetComponentInChildren<TextMeshProUGUI>();
+        h.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
         h.cm.AddListeners(minValue, maxValue);
         h.cm._slider.SetValueWithoutNotify(setValue);
         h.cm._value = setValue;
@@ -310,6 +312,7 @@ public class Assignment : MonoBehaviour
         p.cm._button = canvasPrefab.GetComponentInChildren<Button>();
         p.cm._slider = canvasPrefab.GetComponentInChildren<Slider>();
         p.cm._text = canvasPrefab.GetComponentInChildren<TextMeshProUGUI>();
+        p.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
         p.cm.AddListeners(minValue, maxValue);
         p.cm._slider.SetValueWithoutNotify(setValue);
         p.cm._value = setValue;
