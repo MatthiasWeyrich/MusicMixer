@@ -41,9 +41,10 @@ public class Sound : Intermediary
         while(_paused) yield return null;
         Invoke("Invokation",_source.clip.length-0.09f);
     }
-        private void Invokation(){
+    private void Invokation(){
         if(Activated) vm.ResetColor();
-        nm.NotifyChildren();
+        if(!_wasPlaying) nm.NotifyChildren();
+        _wasPlaying = false;
     }
 
     // Extending and preceeding the skeleton class's method since sounds have special regards to modifier (parameter) nodes
@@ -63,11 +64,13 @@ public class Sound : Intermediary
 
     public override void OnContinueCommand()
     {
+        if(_wasPlaying) _source.Play();
         _paused = false;
     }
 
     public override void OnStartCommand()
     {
+        if(_source.isPlaying) _wasPlaying = true;
         _paused = false;
     }
 }

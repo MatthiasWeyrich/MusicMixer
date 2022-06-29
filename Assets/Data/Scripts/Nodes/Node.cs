@@ -18,7 +18,7 @@ public abstract class Node : MonoBehaviour
     public NodeManager nm;
 
     protected bool _paused;
-    public bool _activated = true;
+    public bool _activated = true, _wasPlaying;
     public virtual bool Activated
     {
         get => _activated;
