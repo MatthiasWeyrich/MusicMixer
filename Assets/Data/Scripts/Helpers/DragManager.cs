@@ -18,7 +18,16 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     protected void InstantiateLine(){
         node.sk.CreateLine(GetMouseWorldPos());
         node.sk.currentLine.from = node.sk._id;
+        node.sk.currentLine.OnLineDeletion += LineDeletionProcess;
         _drawing = true;
+    }
+
+    protected void LineDeletionProcess(LineInteraction li){
+        int index = node.sk._outgoingLines.IndexOf(li);
+        int childID = node.sk._outgoingLines[index].to;
+        node.nm.RemoveChild(childID);
+        node.sk._outgoingLines.Remove(li);
+        Destroy(li.gameObject);
     }
     // When a node is moved, we fire the event and remove all outgoing lines the firing node has
     protected void MovementStart(){
@@ -75,7 +84,10 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     return;
                 }
             }
-            if(node.sk.currentLine.gameObject!=null) Destroy(node.sk.currentLine.gameObject);
+            if(node.sk.currentLine.gameObject!=null) { 
+                node.sk.currentLine.OnLineDeletion -= LineDeletionProcess;
+                Destroy(node.sk.currentLine.gameObject);
+            }
         }
         _drawing = false;
     }
@@ -84,6 +96,7 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         node.nm.AddChild(i.sk._id);
         node.sk.currentLine.to = i.sk._id;
         node.sk._outgoingLines.Add(node.sk.currentLine);
+        node.sk.CreateLineMesh();
     }
     // Since mouse coordinates are 2D, transforming them to 3D
     protected Vector3 GetMouseWorldPos()

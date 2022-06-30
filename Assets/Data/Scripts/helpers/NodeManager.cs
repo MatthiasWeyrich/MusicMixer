@@ -30,6 +30,7 @@ public class NodeManager
         _nodeList.Add(node.sk._id,node);
     }
     public void AddChild(int id) => _children.Add(id);
+    public void RemoveChild(int id) => _children.Remove(id);
 
     // After a node has interacted, it signals all its children
     public void NotifyChildren()

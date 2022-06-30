@@ -9,7 +9,8 @@ public class Skeleton : MonoBehaviour
     public LineInteraction currentLine;
     public List<Vector2> _linePositions;
     LineRenderer _lineRenderer;
-    EdgeCollider2D _edgeCollider;
+    MeshCollider _meshCollider;
+    Mesh mesh;
     // List of outgoing lines from a node
     public List<LineInteraction> _outgoingLines;
 
@@ -22,15 +23,15 @@ public class Skeleton : MonoBehaviour
     // On left click on a node, this creates a new line object and instantiates it at mouse position
     public void CreateLine(Vector3 mouseWP){
         GameObject current = Instantiate(_linePrefab, Vector3.zero, Quaternion.identity);
+        _meshCollider = current.GetComponent<MeshCollider>();
         currentLine = current.AddComponent<LineInteraction>();
-        _lineRenderer = currentLine.GetComponent<LineRenderer>();
-        _edgeCollider = currentLine.GetComponent<EdgeCollider2D>();
+        _lineRenderer = current.GetComponent<LineRenderer>();
+
         _linePositions.Clear();
         _linePositions.Add(mouseWP);
         _linePositions.Add(mouseWP);
         _lineRenderer.SetPosition(0,_linePositions[0]);
         _lineRenderer.SetPosition(1,_linePositions[1]);
-        _edgeCollider.points = _linePositions.ToArray();
     }
     
     // During dragging, this will continuously be called to continue the line
@@ -38,7 +39,12 @@ public class Skeleton : MonoBehaviour
         _linePositions.Add(newPosition);
         _lineRenderer.positionCount++;
         _lineRenderer.SetPosition(_lineRenderer.positionCount-1,newPosition);
-        _edgeCollider.points = _linePositions.ToArray();
+    }
+
+    public void CreateLineMesh(){
+        mesh = new Mesh();
+        _lineRenderer.BakeMesh(mesh);
+        _meshCollider.sharedMesh = mesh;
     }
     
     // If a node fired it's destruction event this method is called by the NodeManager

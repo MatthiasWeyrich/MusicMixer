@@ -37,7 +37,10 @@ public class DragManagerSound : DragManager
                     }
                 }
             }
-            if(node.sk.currentLine.gameObject!=null) Destroy(node.sk.currentLine.gameObject);
+            if(node.sk.currentLine.gameObject!=null) {
+                node.sk.currentLine.OnLineDeletion -= LineDeletionProcess;
+                Destroy(node.sk.currentLine.gameObject);
+            }
         }
         _drawing = false;
     }
@@ -47,6 +50,7 @@ public class DragManagerSound : DragManager
         node.nm.AddChild(p.sk._id);
         node.sk.currentLine.to = p.sk._id;
         node.sk._outgoingLines.Add(node.sk.currentLine);
+        node.sk.CreateLineMesh();
         node.GetComponent<Sound>()._parameterList.Add(p.sk._id,p);
     }
 }
