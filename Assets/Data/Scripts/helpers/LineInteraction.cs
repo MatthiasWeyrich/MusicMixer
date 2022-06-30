@@ -22,6 +22,8 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
         _positions = posis;
         _meshCollider = mc;
         _mesh = m;
+        _lineRenderer.startColor = Color.gray;
+        _lineRenderer.endColor = Color.red;
     }
 
     // Updating the two points (from, to) the line is drawn in between
