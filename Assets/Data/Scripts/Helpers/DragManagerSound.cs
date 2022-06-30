@@ -12,9 +12,8 @@ public class DragManagerSound : DragManager
         }
         else if(Input.GetMouseButton(1))
         {
-            MovementStart();
-            // Sound Node also needs to remove all connections to modifier nodes
-            node.GetComponent<Sound>()._parameterList.Clear();
+            _drawing = false;
+            NotifyAllOfNodeMovement?.Invoke(node.sk._id);
         }
     }
     public override void OnEndDrag(PointerEventData eventData)
@@ -41,6 +40,9 @@ public class DragManagerSound : DragManager
                 node.sk.currentLine.OnLineDeletion -= LineDeletionProcess;
                 Destroy(node.sk.currentLine.gameObject);
             }
+        }
+        else{
+            LineMovementContainer.Instance.EndOfMovement();
         }
         _drawing = false;
     }

@@ -41,7 +41,7 @@ public abstract class Node : MonoBehaviour
             Destroy(ln.gameObject);
         }
         BeingDestroyedNotice?.Invoke(this);
-        dm.DeleteLinesDueToMovement?.Invoke(sk._id);
+        dm.DeleteLinesDueToDeletion?.Invoke(sk._id);
     }
     public abstract void Interact();
     public abstract void onStopCommand();

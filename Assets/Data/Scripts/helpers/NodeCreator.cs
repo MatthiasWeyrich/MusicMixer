@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class NodeCreator
 {
-    // Gameobject with skeleton component
+    // GameObject with skeleton component
     GameObject _prefab;
     // All unique nodes created so far
     Dictionary<string,ObjectData> _types;
@@ -19,14 +19,13 @@ public class NodeCreator
         this._prefab = prefab;
     }
     public GameObject CreateNewNode(string name, NodeType type){
-        GameObject go = null;
-            // Instantiating the skeleton prefab and assigning it an id
+        // Instantiating the skeleton prefab and assigning it an id
         GameObject parent = GameObject.Instantiate(_prefab, new Vector3(1, 0, 0), Quaternion.identity);
         parent.GetComponent<Skeleton>()._id = IDManager.id;
         IDManager.id++;
         switch (type){
             case NodeType.Start:
-                return FormStartNode();
+                return FormStartNode(parent);
             default:
                 if (_types.ContainsKey(name))
                 {
@@ -34,16 +33,17 @@ public class NodeCreator
                     // A nodes name is either the name of an uploaded sound file, the name of a hook or the name of a modifier
                     // Since the user is not limited to the amount of equivalent nodes they can place in the scene,
                     // if there's a node with the same name, we'll take a copy of it from the dictionary
-                    go = GetNodeFromDictionary(name,parent);
+                    return GetNodeFromDictionary(name,parent);
                 }
                 else
                 {
+                    GameObject go = null;
                     // Such node does not already exists, so we create a new node with that name, assign it a primitive and color, and add it to the dictionary
                     ObjectData od = new ObjectData();
                     go = FormNode(type, od,parent);
                     _types.Add(name, od);
+                    return go;
                 }
-                return go;
         }
     }
     private GameObject GetNodeFromDictionary(string name, GameObject parent)
@@ -56,9 +56,8 @@ public class NodeCreator
         child.transform.position = parent.transform.position;
         return parent;
     }
-    private GameObject FormStartNode()
+    private GameObject FormStartNode(GameObject parent)
     {
-        GameObject parent = GameObject.Instantiate(_prefab, Vector3.zero, Quaternion.identity);
         GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
         child.GetComponent<Renderer>().material.color = Color.black;
         child.transform.parent = parent.transform;

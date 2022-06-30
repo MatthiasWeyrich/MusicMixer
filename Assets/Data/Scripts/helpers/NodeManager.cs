@@ -7,7 +7,7 @@ public class NodeManager
     // If a <Node> is moved or destroyed, all lines that involve the <Node>
     // Since a node only ever retains information about its outgoing lines,
     // we need to notify all other nodes to inspect their lists and remove lines with the <Node> as destination 
-    private static Action<int> NotifyAllOfMovement;
+    private static Action<int> NotifyAllOfDestruction;
 
     // List of all nodes
     private static Dictionary<int,Node> _nodeList;
@@ -18,15 +18,16 @@ public class NodeManager
         if(_nodeList==null) 
             _nodeList = new Dictionary<int, Node>();
         _children = new HashSet<int>();
-        node.dm.DeleteLinesDueToMovement += GlobalMovementChange;
+        node.dm.DeleteLinesDueToDeletion += GlobalNodeDestructionChange;
         if (node.TryGetComponent(out Sound s))
         {
-            NotifyAllOfMovement += s.RemoveInvolvedLines;
+            NotifyAllOfDestruction += s.RemoveInvolvedLines;
         }
-        else NotifyAllOfMovement += node.sk.RemoveInvolvedLines;
+        else NotifyAllOfDestruction += node.sk.RemoveInvolvedLines;
         node.BeingDestroyedNotice += NodeDestruction;
         node.BeingActivatedNotice += ActivationChange;
         node.BeingDeactivatedNotice += DeactivationChange;
+        node.dm.NotifyAllOfNodeMovement += MovementReaction;
         _nodeList.Add(node.sk._id,node);
     }
     public void AddChild(int id) => _children.Add(id);
@@ -41,14 +42,27 @@ public class NodeManager
         }
     }
 
-    // Direct delegate for the <DeleteLinesDueToMovement> in the skeleton class
-    void GlobalMovementChange(int id){
+    // A node has moved and thus involved lines from or to it must be adjusted
+    // This searches through every nodes _outgoingLines list and checks whether the moved node's id is included.
+    // It that is the case, the LineInteraction object is given to the LineMovementContainer class which will conduct the adjustments
+    private void MovementReaction(int id){
+        foreach(int ident in _nodeList.Keys){
+            foreach(LineInteraction li in _nodeList[ident].sk._outgoingLines){
+                if(li.to == id || li.from == id){
+                    LineMovementContainer.Instance.AddLineToMovementList(li);
+                }
+            }
+        }
+    }
+
+    // Direct delegate for the <DeleteLinesDueToDeletion> in the skeleton class
+    void GlobalNodeDestructionChange(int id){
         foreach (var node in _nodeList.Values)
         {
             node.nm._children.Remove(id);
         }
         _nodeList[id].nm._children.Clear();
-        NotifyAllOfMovement?.Invoke(id);
+        NotifyAllOfDestruction?.Invoke(id);
     }
 
     // Direct delegate for the <BeingDeactivatedNotice> in the node class
@@ -77,7 +91,7 @@ public class NodeManager
     // Nodes send themselves here via their <BeingDestroyedNotice> event to be destroyed
     void NodeDestruction(Node node)
     {
-        NotifyAllOfMovement -= node.sk.RemoveInvolvedLines;
+        NotifyAllOfDestruction -= node.sk.RemoveInvolvedLines;
         node.BeingDestroyedNotice -= NodeDestruction;
         node.BeingActivatedNotice -= ActivationChange;
         node.BeingDeactivatedNotice -= DeactivationChange;
