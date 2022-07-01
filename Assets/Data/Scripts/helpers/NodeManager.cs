@@ -32,6 +32,7 @@ public class NodeManager
     }
     public void AddChild(int id) => _children.Add(id);
     public void RemoveChild(int id) => _children.Remove(id);
+    public void RemoveNode(int id) => _nodeList.Remove(id);
 
     // After a node has interacted, it signals all its children
     public void NotifyChildren()
@@ -91,9 +92,15 @@ public class NodeManager
     // Nodes send themselves here via their <BeingDestroyedNotice> event to be destroyed
     void NodeDestruction(Node node)
     {
-        NotifyAllOfDestruction -= node.sk.RemoveInvolvedLines;
+        if (node.TryGetComponent(out Sound s))
+        {
+            NotifyAllOfDestruction -= s.RemoveInvolvedLines;
+        }
+        else NotifyAllOfDestruction -= node.sk.RemoveInvolvedLines;
         node.BeingDestroyedNotice -= NodeDestruction;
         node.BeingActivatedNotice -= ActivationChange;
         node.BeingDeactivatedNotice -= DeactivationChange;
+        node.dm.DeleteLinesDueToDeletion -= GlobalNodeDestructionChange;
+        node.dm.NotifyAllOfNodeMovement -= MovementReaction;
     }
 }

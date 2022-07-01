@@ -114,14 +114,13 @@ public class Assignment : MonoBehaviour
 
     void AddEvents<T>(T s, NodeType type) where T : Node
     {
-        rtm.StartCommand += s.OnStartCommand;
         if (!type.Equals(NodeType.Start))
         {
             rtm.PauseCommmand += s.onStopCommand;
             rtm.ContinueCommand += s.OnContinueCommand;
             s.BeingDestroyedNotice += DeleteNode;
-            rtm.StartCommand += s.OnStartCommand;
         }
+        else rtm.StartCommand += s.OnStartCommand;
     }
     void AddEvents(Music m)
     {

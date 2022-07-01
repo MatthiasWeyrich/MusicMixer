@@ -51,6 +51,7 @@ public class DragManagerSound : DragManager
     private void OnObjectHover(Parameter p){
         node.nm.AddChild(p.sk._id);
         node.sk.currentLine.to = p.sk._id;
+        node.sk.currentLine._to = p;
         node.sk._outgoingLines.Add(node.sk.currentLine);
         node.sk.CreateLineMesh();
         node.GetComponent<Sound>()._parameterList.Add(p.sk._id,p);

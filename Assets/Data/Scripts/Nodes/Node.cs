@@ -40,8 +40,9 @@ public abstract class Node : MonoBehaviour
             sk._outgoingLines.Remove(ln);
             Destroy(ln.gameObject);
         }
-        BeingDestroyedNotice?.Invoke(this);
         dm.DeleteLinesDueToDeletion?.Invoke(sk._id);
+        BeingDestroyedNotice?.Invoke(this);
+        nm.RemoveNode(sk._id);
     }
     public abstract void Interact();
     public abstract void onStopCommand();
