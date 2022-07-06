@@ -164,8 +164,6 @@ public class DropdownManager : MonoBehaviour
         _modifierDropdown.AddOptions(_modifier);
     }
 
-    
-
     private void addPredefinesFilterToDropwdown()
     {
         _filter.Add("NONE");

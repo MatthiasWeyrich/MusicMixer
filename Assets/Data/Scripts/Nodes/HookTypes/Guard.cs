@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class Guard : Hook
 {
-    public override void Interact()
+    protected override void Interact()
     {
-        if(!_paused)
-            if (Activated)
+        
+        if (Activated)
+        {
+            if (Time.realtimeSinceStartup >= cm._value)
             {
-                if (Time.realtimeSinceStartup >= cm._value)
-                {
-                    Invokation();
-                }
+                Invokation();
             }
-            else Invokation();
+        }
+        else Invokation();
     }
 }

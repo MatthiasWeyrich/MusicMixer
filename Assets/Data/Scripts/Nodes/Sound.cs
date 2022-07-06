@@ -14,37 +14,37 @@ public class Sound : Intermediary
     {
         data = new SoundData();
         _parameterList = new Dictionary<int, Parameter>();
-
     }
-    public override void Interact()
+
+    protected override void Interact()
     {
-        // If deactivated, send the signal
-        if (!Activated)
+        
+        if (_source.isPlaying)
+            _source.Stop();
+        
+        // If activated, play the sound
+        if (Activated)
         {
-            Invokation();
-            return;
-        }
-        if(!_paused) { 
             // Updating the parameters we'll give to the music mixer based on modifiers in our list
             data.PrepareData(_parameterList);
             // Sending parameters and sound to the audio manager and playing the sound
-            am.PlaySound(_source,data);
+            am.PlaySound(_source, data);
             // Reverting the parameters to default values
             data.ClearDictionary();
             // Effect during playback of the sound
             vm.SetColor(Color.magenta);
         }
-        StartCoroutine("waitUntil");
+        
+        Invoke("ResetColor",_source.clip.length-0.09f);
+        Invokation();
     }
-    // Waiting to notify connected children until sound has almost fully played back
-    IEnumerator waitUntil(){
-        while(_paused) yield return null;
-        Invoke("Invokation",_source.clip.length-0.09f);
-    }
+
     private void Invokation(){
-        if(Activated) vm.ResetColor();
-        if(!_wasPlaying) nm.NotifyChildren();
-        _wasPlaying = false;
+        nm.NotifyChildren();
+    }
+
+    private void ResetColor() {
+        vm.ResetColor();
     }
 
     // Extending and preceeding the skeleton class's method since sounds have special regards to modifier (parameter) nodes
@@ -56,21 +56,11 @@ public class Sound : Intermediary
         }
         sk.RemoveInvolvedLines(id);
     }
-    public override void onStopCommand()
-    {
-        _source.Pause();
-        _paused = true;
-    }
 
-    public override void OnContinueCommand()
+    public override void OnStopCommand()
     {
-        if(_wasPlaying) _source.Play();
-        _paused = false;
-    }
-
-    public override void OnStartCommand()
-    {
-        if(_source.isPlaying) _wasPlaying = true;
-        _paused = false;
+        base.OnStopCommand();
+        _source.Stop();
+        ResetColor();
     }
 }

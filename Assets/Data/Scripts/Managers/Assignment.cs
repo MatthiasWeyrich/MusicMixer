@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using TMPro;
 using UnityEngine.Audio;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Assignment : MonoBehaviour
@@ -13,33 +14,33 @@ public class Assignment : MonoBehaviour
     private Action<string> AddNodeToDropdown;
 
     [SerializeField] AudioMixer _mixer;
-    [SerializeField] RuntimeManager rtm;
-    [SerializeField] FileManager fm;
-    [SerializeField] DropdownManager dm;
-    [SerializeField] AudioManager am;
-    NodeCreator nc;
-    private SoundStorage ss;
+    [FormerlySerializedAs("rtm")] [SerializeField] ButtonBehaviour buttonBehaviour;
+    [FormerlySerializedAs("fm")] [SerializeField] FileManager fileManager;
+    [FormerlySerializedAs("dm")] [SerializeField] DropdownManager dropdownManager;
+    [FormerlySerializedAs("am")] [SerializeField] AudioManager audioManager;
+    NodeCreator nodeCreator;
+    private SoundStorage soundStorage;
     [SerializeField] GameObject _componentPrefab;
     [SerializeField] GameObject _canvasPrefab;
     [SerializeField] private GameObject _canvasPrefabSound;
     
     void OnEnable(){
-        nc = new NodeCreator(_componentPrefab);
-        ss = new SoundStorage();
-        fm.RequestedSoundLoaded += GetLoadedSource;
-        fm.RequestedMusicLoaded += GetLoadedMusic;
-        dm.NodeFromDropdown += getNodeFromDropdown;
-        AddNodeToDropdown += dm.AddNodeToDropdown;
+        nodeCreator = new NodeCreator(_componentPrefab);
+        soundStorage = new SoundStorage();
+        fileManager.RequestedSoundLoaded += GetLoadedSource;
+        fileManager.RequestedMusicLoaded += GetLoadedMusic;
+        dropdownManager.NodeFromDropdown += GetNodeFromDropdown;
+        AddNodeToDropdown += dropdownManager.AddNodeToDropdown;
         CreateStartNode();
     }
+    
     void CreateStartNode()
     {
         const NodeType type = NodeType.Start;
-        GameObject startNode = nc.CreateNewNode(null,type);
+        GameObject startNode = nodeCreator.CreateNewNode(null,type);
         Start s = ApplyStartBasics(startNode);
-        s.sk._id = 0;
-        AddEvents(s,type);
     }
+    
     void GetLoadedMusic(AudioClip clip){
         /*
             Signaling possible music objects to destroy themselves,
@@ -58,19 +59,20 @@ public class Assignment : MonoBehaviour
             if(amg[x].name.Equals("Music")) a = amg[x];
         }
         m._source.outputAudioMixerGroup = a;
-        m._source.playOnAwake = false;    
+        m._source.playOnAwake = false;
         m._source.clip = clip;
         AddEvents(m);
     }
 
     void GetLoadedSource(AudioClip clip){
-        GameObject node = nc.CreateNewNode(clip.name, NodeType.Sound);
+        GameObject node = nodeCreator.CreateNewNode(clip.name, NodeType.Sound);
         Sound s = ApplySoundBasics(node);
         node.name = clip.name;
         AddAudioComponent(s, clip);
         AddNodeToDropdown?.Invoke(clip.name);
-        ss.AddToStorage(clip.name,clip);
+        soundStorage.AddToStorage(clip.name,clip);
     }
+    
     void AddAudioComponent(Sound s, AudioClip clip){
         // Assigning audio source and mixer group to the sound node
         s._source = s.gameObject.AddComponent<AudioSource>();
@@ -82,11 +84,11 @@ public class Assignment : MonoBehaviour
         s._source.outputAudioMixerGroup = a;
         s._source.playOnAwake = false;
         s._source.clip = clip;
-        AddEvents(s,NodeType.Sound);
+        AddEvents(s);
     }
     void GetSecondaryNode(string name, NodeType type)
     {
-        GameObject node = nc.CreateNewNode(name, type);
+        GameObject node = nodeCreator.CreateNewNode(name, type);
         if (type.Equals(NodeType.Hook))
         {
             ApplyHookBasics(node, name);
@@ -98,43 +100,38 @@ public class Assignment : MonoBehaviour
     }
 
     // Direct delegate to the dropdown managers event fired when a node was chosen from the dropdown
-    void getNodeFromDropdown(string name, NodeType type)
+    void GetNodeFromDropdown(string name, NodeType type)
     {
         switch (type)
         {
             case NodeType.Sound:
-                GetLoadedSource(ss.GetClipFromStorage(name));
+                GetLoadedSource(soundStorage.GetClipFromStorage(name));
                 break;
             default:
                 GetSecondaryNode(name,type);
-                break;        
+                break;
         }
         IDManager.id++;
     }
 
-    void AddEvents<T>(T s, NodeType type) where T : Node
+    void AddEvents<T>(T s) where T : Node
     {
-        if (!type.Equals(NodeType.Start))
-        {
-            rtm.PauseCommmand += s.onStopCommand;
-            rtm.ContinueCommand += s.OnContinueCommand;
-            s.BeingDestroyedNotice += DeleteNode;
-        }
-        else rtm.StartCommand += s.OnStartCommand;
+        buttonBehaviour.StartCommand += s.OnStartCommand;
+        buttonBehaviour.StopCommand += s.OnStopCommand;
+        s.BeingDestroyedNotice += DeleteNode;
     }
+    
     void AddEvents(Music m)
     {
-        rtm.StartCommand += m.OnStartCommand;
-        rtm.PauseCommmand += m.OnPauseCommand;
-        rtm.ContinueCommand += m.OnContinueCommand;
+        buttonBehaviour.StartCommand += m.OnStartCommand;
+        buttonBehaviour.StopCommand += m.OnStopCommand;
         NewMusicNotification += m.NewMusicReact;
-        m.OnNewMusic += deleteMusic;
+        m.OnNewMusic += DeleteMusic;
     }
 
-    void deleteMusic(Music m){
-        rtm.StartCommand -= m.OnStartCommand;
-        rtm.PauseCommmand -= m.OnPauseCommand;
-        rtm.ContinueCommand -= m.OnContinueCommand;
+    void DeleteMusic(Music m){
+        buttonBehaviour.StartCommand -= m.OnStartCommand;
+        buttonBehaviour.StopCommand -= m.OnStopCommand;
         NewMusicNotification -= m.NewMusicReact;
         Destroy(m.gameObject);
     }
@@ -143,8 +140,7 @@ public class Assignment : MonoBehaviour
     // their callbacks to this class's events will be unassigned and the object destroyed
     // NOTE: THIS MIGHT BE INCOMPLETE. MAKE SURE ALL OUTGOING AND INCOMING LINES ARE DESTROYED BEFOREHAND
     void DeleteNode(Node n){
-        rtm.PauseCommmand -= n.onStopCommand;
-        rtm.ContinueCommand -= n.onStopCommand;
+        buttonBehaviour.StopCommand -= n.OnStopCommand;
         n.BeingDestroyedNotice -= DeleteNode;
         Destroy(n.gameObject);
     }
@@ -156,12 +152,14 @@ public class Assignment : MonoBehaviour
     Start ApplyStartBasics(GameObject go){
         Start s = go.AddComponent<Start>();
         s.sk = s.gameObject.GetComponent<Skeleton>();
+        s.sk._id = 0;
         s.vm = s.gameObject.AddComponent<VisualManager>();
         s.dm = s.gameObject.AddComponent<DragManager>();
         s.nm = new NodeManager(s);
-        AddEvents(s,NodeType.Start);
+        AddEvents(s);
         return s;
     }
+    
     Sound ApplySoundBasics(GameObject go){
         Sound s = go.AddComponent<Sound>();
         s.sk = s.gameObject.GetComponent<Skeleton>();
@@ -177,9 +175,10 @@ public class Assignment : MonoBehaviour
         s.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
         s.cm.AddListeners();
         s.nm = new NodeManager(s);
-        s.am = am;
+        s.am = audioManager;
         return s;
     }
+    
     void ApplyHookBasics(GameObject go, string name){
         Hook h = null;
         float setValue = 0f, minValue = 0f, maxValue = 0f;
@@ -201,7 +200,7 @@ public class Assignment : MonoBehaviour
                 minValue = 10f;
                 maxValue = 120f;
                 setValue = 10f;
-                break;    
+                break;
         }
         h.cm = h.gameObject.AddComponent<CanvasManager>();
         GameObject canvasPrefab = Instantiate(_canvasPrefab);
@@ -223,8 +222,9 @@ public class Assignment : MonoBehaviour
         h.dm = h.gameObject.AddComponent<DragManager>();
         h.nm = new NodeManager(h);
         h.name = name;
-        AddEvents(h,NodeType.Hook);
+        AddEvents(h);
     }
+    
     void ApplyParameterBasics(GameObject go, string name){
         Parameter p = null;
         float setValue = 0f, minValue = 0f, maxValue = 0f;
@@ -323,8 +323,7 @@ public class Assignment : MonoBehaviour
         p.nm = new NodeManager(p);
         p.name = name;
         p._paramName = name;
-        AddEvents(p,NodeType.Modifier);
+        AddEvents(p);
     }
 
 }
-    

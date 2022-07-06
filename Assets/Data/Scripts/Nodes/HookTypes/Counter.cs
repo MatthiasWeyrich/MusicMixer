@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Counter : Hook
 {
-    public override void Interact()
+	protected override void Interact()
     {
-        if(!_paused)
-        {
-            if (Activated)
-                Invoke("Invokation", cm._value);
-            else Invokation();
-        }   
+        
+		if (Activated)
+			Invoke("Invokation", cm._value);
+		else Invokation();
+        
     }
 }

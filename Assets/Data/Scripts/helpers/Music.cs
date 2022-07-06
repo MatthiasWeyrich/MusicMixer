@@ -15,8 +15,8 @@ public class Music : MonoBehaviour
     public void NewMusicReact(){
         OnNewMusic?.Invoke(this);
     }
-    public void OnPauseCommand(){
-        _source.Pause();
+    public void OnStopCommand(){
+        _source.Stop();
     }
     public void OnContinueCommand(){
         _source.Play();

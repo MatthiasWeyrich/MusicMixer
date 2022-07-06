@@ -14,7 +14,7 @@ public class NodeManager
     // A node's children it sends signals to
     private HashSet<int> _children;
 
-    public NodeManager(Node node){
+    public NodeManager(Node node) {
         if(_nodeList==null) 
             _nodeList = new Dictionary<int, Node>();
         _children = new HashSet<int>();
@@ -39,7 +39,7 @@ public class NodeManager
     {
         foreach (int id in _children)
         {
-            _nodeList[id].Interact();
+            _nodeList[id].OnInteract();
         }
     }
 

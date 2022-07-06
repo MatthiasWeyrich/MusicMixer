@@ -17,8 +17,9 @@ public abstract class Node : MonoBehaviour
     public DragManager dm;
     public NodeManager nm;
 
-    protected bool _paused;
-    public bool _activated = true, _wasPlaying;
+    protected static bool isPlaying;
+
+    public bool _activated = true;
     public virtual bool Activated
     {
         get => _activated;
@@ -44,8 +45,23 @@ public abstract class Node : MonoBehaviour
         BeingDestroyedNotice?.Invoke(this);
         nm.RemoveNode(sk._id);
     }
-    public abstract void Interact();
-    public abstract void onStopCommand();
-    public abstract void OnContinueCommand();
-    public abstract void OnStartCommand();
+
+    public void OnInteract() {
+        
+        Debug.Log("IsPlaying: " + isPlaying);
+        
+        if (isPlaying)
+            Interact();
+        
+    }
+
+    protected abstract void Interact();
+
+    public virtual void OnStartCommand() {
+        isPlaying = true;
+    }
+
+    public virtual void OnStopCommand() {
+        isPlaying = false;
+    }
 }
