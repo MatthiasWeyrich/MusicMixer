@@ -117,7 +117,8 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             {
                 if (g.TryGetComponent(out Intermediary i))
                 {
-                    OnObjectHover(i);
+                    if (i != node)
+                        OnObjectHover(i);
                     return;
                 }
             }

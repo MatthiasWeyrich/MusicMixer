@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,6 +49,10 @@ public class NodeCreator
         GameObject gameObject = GameObject.Instantiate(prefab, new Vector3(1, 0, 0), Quaternion.identity);
         gameObject.GetComponent<Skeleton>()._id = IDManager.id;
         IDManager.id++;
+        
+        if (type == NodeType.Hook)
+            gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(name);
+        
         switch (type){
             case NodeType.Start:
                 return gameObject;
@@ -91,11 +96,11 @@ public class NodeCreator
                 od.type = PrimitiveType.Capsule;
                 break;
         }
-        AddColorToNode(gameObject, od);
+        AddColorToNode(type, gameObject, od);
     }
-    private void AddColorToNode(GameObject gameObject, ObjectData od){
+    private void AddColorToNode(NodeType type, GameObject gameObject, ObjectData od){
         Image img = gameObject.GetComponentInChildren<Image>();
-        Color c = Color.HSVToRGB(Random.Range(0.0f, 1.0f), 1.0f, 1.0f);
+        Color c = Color.HSVToRGB(Random.Range(0.0f, 1.0f), type == NodeType.Sound ? 1.0f : 0.5f, 1.0f);
         img.color = c;
         od.c = c;
     }
