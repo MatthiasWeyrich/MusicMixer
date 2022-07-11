@@ -23,7 +23,8 @@ public class DragManagerSound : DragManager
             {
                 if (g.TryGetComponent(out Intermediary i))
                 {
-                    OnObjectHover(i);
+                    if (i != node)
+                       OnObjectHover(i);
                     return;
                 }
                     // Making modifier nodes a valid target
