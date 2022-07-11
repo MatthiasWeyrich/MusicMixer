@@ -1,24 +1,25 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class VisualManager : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public Renderer _r;
+    public Image _r;
     public Color _defaultC;
 
     void OnEnable(){
-        _r = gameObject.GetComponentInChildren<Renderer>();
-        _defaultC = _r.material.color;
+        _r = gameObject.GetComponentInChildren<Image>();
+        _defaultC = _r.color;
     }
 
     public void SetColor(Color c)
     {
-        _r.material.color = c;
+        _r.color = c;
     }
 
     public void ResetColor()
     {
-        _r.material.color = _defaultC;
+        _r.color = _defaultC;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

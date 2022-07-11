@@ -40,13 +40,13 @@ public class DropdownManager : MonoBehaviour
         _hookDropdown.options.Clear();
         _modifierDropdown.options.Clear();
         _filterDropdown.options.Clear();
-        addPredefinedHooksToDropdown();
-        addPredefinedModifierToDropdown();
-        addPredefinesFilterToDropwdown();
-        _hookDropdown.onValueChanged.AddListener(delegate { handleHookDropdown(); });
-        _soundDropdown.onValueChanged.AddListener(delegate { handleSoundDropdown(); });
-        _modifierDropdown.onValueChanged.AddListener(delegate { handleModifierDropdown(); });
-        _filterDropdown.onValueChanged.AddListener(delegate { handleFilterDropdown(); });
+        AddPredefinedHooksToDropdown();
+        AddPredefinedModifierToDropdown();
+        AddPredefinesFilterToDropwdown();
+        _hookDropdown.onValueChanged.AddListener(delegate { HandleHookDropdown(); });
+        _soundDropdown.onValueChanged.AddListener(delegate { HandleSoundDropdown(); });
+        _modifierDropdown.onValueChanged.AddListener(delegate { HandleModifierDropdown(); });
+        _filterDropdown.onValueChanged.AddListener(delegate { HandleFilterDropdown(); });
         _slider.onValueChanged.AddListener(HandleSliderChange);
         _slider.maxValue = 22000f;
         _slider.minValue = 10f;
@@ -63,19 +63,22 @@ public class DropdownManager : MonoBehaviour
             _soundDropdown.AddOptions(_sounds);
         }
     }
-    void handleSoundDropdown()
+    
+    void HandleSoundDropdown()
     {
         int index = _soundDropdown.value;
         string soundName = _soundDropdown.options[index].text;
         NodeFromDropdown?.Invoke(soundName, NodeType.Sound);
     }
-    void handleHookDropdown()
+    
+    void HandleHookDropdown()
     {
         int index = _hookDropdown.value;
         string hookName = _hookDropdown.options[index].text;
         NodeFromDropdown?.Invoke(hookName,NodeType.Hook);
     }
-    void handleModifierDropdown(){
+    
+    void HandleModifierDropdown(){
         int index = _modifierDropdown.value;
         string modifierName = _modifierDropdown.options[index].text;
         // Names in the Modifier Dropdown have other names than in code.
@@ -109,7 +112,7 @@ public class DropdownManager : MonoBehaviour
         NodeFromDropdown?.Invoke(modifierName,NodeType.Modifier);
     }
 
-    void handleFilterDropdown()
+    void HandleFilterDropdown()
     {
         int index = _filterDropdown.value;
         string filterName = _filterDropdown.options[index].text;
@@ -131,13 +134,14 @@ public class DropdownManager : MonoBehaviour
             _slider.gameObject.SetActive(true);
             _currentFilter = FILTER.HighPassFrequency;
             break;
-        }     
+        }
     }
+    
     void HandleSliderChange(float f){
         _mixer.SetFloat(_currentFilter.ToString(),f);
     }
     
-    void addPredefinedHooksToDropdown()
+    void AddPredefinedHooksToDropdown()
     {
         _hooks.Add("Counter");
         _hooks.Add("Numerator");
@@ -146,7 +150,7 @@ public class DropdownManager : MonoBehaviour
         _hookDropdown.AddOptions(_hooks);
     }
     
-    private void addPredefinedModifierToDropdown()
+    private void AddPredefinedModifierToDropdown()
     {
         _modifier.Add("Volume");
         //modifier.Add("Speed");
@@ -164,7 +168,7 @@ public class DropdownManager : MonoBehaviour
         _modifierDropdown.AddOptions(_modifier);
     }
 
-    private void addPredefinesFilterToDropwdown()
+    private void AddPredefinesFilterToDropwdown()
     {
         _filter.Add("NONE");
         _filter.Add("Lowpass");

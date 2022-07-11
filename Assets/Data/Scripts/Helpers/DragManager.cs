@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -17,11 +19,55 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     // Mouse offset so the dragged object's center won't snap to the mouse position
     protected Vector3 _mouseOffset;
     protected bool _drawing;
-    protected void OnEnable() => node = GetComponent<Node>();
+
+    protected void OnEnable() {
+        
+        node = GetComponent<Node>();
+
+        Button[] buttons = gameObject.GetComponentsInChildren<Button>();
+        
+        node.inButton = Array.Find(buttons, button => button.name.Equals("InButton"));
+        node.outButton = Array.Find(buttons, button => button.name.Equals("OutButton"));
+        EventTrigger eventTrigger = node.outButton.GetComponent<EventTrigger>();
+
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.BeginDrag;
+        entry.callback.AddListener(eventData => {
+            
+            if (Input.GetMouseButton(0))
+                InstantiateLine();
+
+        });
+        eventTrigger.triggers.Add(entry);
+        
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.Drag;
+        entry.callback.AddListener(eventData => {
+            
+            if(Input.GetMouseButton(0)){
+                Vector2 position = GetMouseWorldPos();
+                // Making sure that a new position of the line has a minimum distance
+                //if(Vector2.Distance(position, node.sk._linePositions[node.sk._linePositions.Count-1]) > .2f)
+                node.sk.UpdateLine(position);
+            }
+
+        });
+        eventTrigger.triggers.Add(entry);
+        
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.EndDrag;
+        entry.callback.AddListener(eventData => {
+            
+            OnEndDrag((PointerEventData) eventData);
+
+        });
+        eventTrigger.triggers.Add(entry);
+
+    }
 
     // Prep work for a new line
     protected void InstantiateLine(){
-        node.sk.CreateLine(GetMouseWorldPos());
+        node.sk.CreateLine(node.outButton.transform.position);
         node.sk.currentLine.from = node.sk._id;
         node.sk.currentLine._from = node;
         node.sk.currentLine.OnLineDeletion += LineDeletionProcess;
@@ -44,27 +90,16 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public virtual void OnBeginDrag(PointerEventData eventData)
     {
         _mouseOffset = transform.position - GetMouseWorldPos();
-            // Drawing a new line / making a new connections
-        if(Input.GetMouseButton(0)) {
-            InstantiateLine();
-        }
+        
             // Moving the node in the scene
-        else if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(1))
         {
             _drawing = false;
             NotifyAllOfNodeMovement?.Invoke(node.sk._id);
         }
     }
-    public virtual void OnDrag(PointerEventData eventData)
-    {
-        // Continuously drawing the line
-        if(Input.GetMouseButton(0)){
-            Vector2 position = GetMouseWorldPos();
-                // Making sure that a new position of the line has a minimum distance
-                                                            //if(Vector2.Distance(position, node.sk._linePositions[node.sk._linePositions.Count-1]) > .2f)
-                node.sk.UpdateLine(position);
-        }
-        else if (Input.GetMouseButton(1))
+    public virtual void OnDrag(PointerEventData eventData) {
+        if (Input.GetMouseButton(1))
         {
             transform.position = GetMouseWorldPos() - _mouseOffset;
             Movement();
@@ -106,6 +141,7 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         node.sk._outgoingLines.Add(node.sk.currentLine);
         node.sk.CreateLineMesh();
     }
+    
     // Since mouse coordinates are 2D, transforming them to 3D
     protected Vector3 GetMouseWorldPos()
     {

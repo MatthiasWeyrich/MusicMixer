@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NodeCreator
 {
     // GameObject with skeleton component
-    GameObject _prefab;
+    private GameObject startPrefab;
+    private GameObject soundPrefab;
+    private GameObject hookPrefab;
+    private GameObject modifierPrefab;
     // All unique nodes created so far
     Dictionary<string,ObjectData> _types;
     // Container class to store data about color and representation a node should have
@@ -13,19 +17,40 @@ public class NodeCreator
         public Color c { get; set; }
         public PrimitiveType type { get; set; }
     }
-    public NodeCreator(GameObject prefab)
+    public NodeCreator(GameObject startPrefab, GameObject soundPrefab, GameObject hookPrefab, GameObject modifierPrefab)
     {
         _types = new Dictionary<string,ObjectData>();
-        this._prefab = prefab;
+
+        this.startPrefab = startPrefab;
+        this.soundPrefab = soundPrefab;
+        this.hookPrefab = hookPrefab;
+        this.modifierPrefab = modifierPrefab;
     }
     public GameObject CreateNewNode(string name, NodeType type){
         // Instantiating the skeleton prefab and assigning it an id
-        GameObject parent = GameObject.Instantiate(_prefab, new Vector3(1, 0, 0), Quaternion.identity);
-        parent.GetComponent<Skeleton>()._id = IDManager.id;
+        GameObject prefab = null;
+
+        switch (type) {
+            case NodeType.Start:
+                prefab = startPrefab;
+                break;
+            case NodeType.Sound:
+                prefab = soundPrefab;
+                break;
+            case NodeType.Hook:
+                prefab = hookPrefab;
+                break;
+            case NodeType.Modifier:
+                prefab = modifierPrefab;
+                break;
+        }
+        
+        GameObject gameObject = GameObject.Instantiate(prefab, new Vector3(1, 0, 0), Quaternion.identity);
+        gameObject.GetComponent<Skeleton>()._id = IDManager.id;
         IDManager.id++;
         switch (type){
             case NodeType.Start:
-                return FormStartNode(parent);
+                return gameObject;
             default:
                 if (_types.ContainsKey(name))
                 {
@@ -33,65 +58,45 @@ public class NodeCreator
                     // A nodes name is either the name of an uploaded sound file, the name of a hook or the name of a modifier
                     // Since the user is not limited to the amount of equivalent nodes they can place in the scene,
                     // if there's a node with the same name, we'll take a copy of it from the dictionary
-                    return GetNodeFromDictionary(name,parent);
+                    GetNodeFromDictionary(name,gameObject);
+                    return gameObject;
                 }
                 else
                 {
-                    GameObject go = null;
                     // Such node does not already exists, so we create a new node with that name, assign it a primitive and color, and add it to the dictionary
                     ObjectData od = new ObjectData();
-                    go = FormNode(type, od,parent);
+                    FormNode(type, od, gameObject);
                     _types.Add(name, od);
-                    return go;
+                    return gameObject;
                 }
         }
     }
-    private GameObject GetNodeFromDictionary(string name, GameObject parent)
+    private void GetNodeFromDictionary(string name, GameObject gameObject)
     {
         // Assigning the node the same color and primitive as nodes that share the same name
-        GameObject child = GameObject.CreatePrimitive(_types[name].type);
-        Renderer r = child.GetComponent<Renderer>();
-        r.material.color = _types[name].c;
-        child.transform.parent = parent.transform;
-        child.transform.position = parent.transform.position;
-        return parent;
+        Image img = gameObject.GetComponentInChildren<Image>();
+        img.color = _types[name].c;
     }
-    private GameObject FormStartNode(GameObject parent)
+    private void FormNode(NodeType type, ObjectData od, GameObject gameObject)
     {
-        GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        child.GetComponent<Renderer>().material.color = Color.black;
-        child.transform.parent = parent.transform;
-        child.transform.position = parent.transform.position;
-        return parent;
-    }
-    private GameObject FormNode(NodeType type, ObjectData od, GameObject parent)
-    {
-        GameObject child = null;
         switch (type)
         {
             case NodeType.Sound:
-                child = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 od.type = PrimitiveType.Cube;
                 break;
             case NodeType.Hook:
-                child = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 od.type = PrimitiveType.Sphere;
                 break;
             case NodeType.Modifier:
-                child = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-                child.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
                 od.type = PrimitiveType.Capsule;
                 break;
         }
-        AddColorToNode(child,od);
-        child.transform.parent = parent.transform;
-        child.transform.position = parent.transform.position;
-        return parent;
+        AddColorToNode(gameObject, od);
     }
-    private void AddColorToNode(GameObject child, ObjectData od){
-        Renderer r = child.GetComponent<Renderer>();
-        Color c = Random.ColorHSV();
-        r.material.color = c;
+    private void AddColorToNode(GameObject gameObject, ObjectData od){
+        Image img = gameObject.GetComponentInChildren<Image>();
+        Color c = Color.HSVToRGB(Random.Range(0.0f, 1.0f), 1.0f, 1.0f);
+        img.color = c;
         od.c = c;
     }
 }

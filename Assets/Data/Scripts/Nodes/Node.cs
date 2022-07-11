@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public abstract class Node : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public abstract class Node : MonoBehaviour
     public VisualManager vm;
     public DragManager dm;
     public NodeManager nm;
+
+    public Button inButton;
+    public Button outButton;
 
     protected static bool isPlaying;
 
@@ -47,8 +51,6 @@ public abstract class Node : MonoBehaviour
     }
 
     public void OnInteract() {
-        
-        Debug.Log("IsPlaying: " + isPlaying);
         
         if (isPlaying)
             Interact();

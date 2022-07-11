@@ -7,10 +7,8 @@ public class DragManagerSound : DragManager
     public override void OnBeginDrag(PointerEventData eventData)
     {
         _mouseOffset = transform.position - GetMouseWorldPos();
-        if(Input.GetMouseButton(0)) {
-            InstantiateLine();
-        }
-        else if(Input.GetMouseButton(1))
+        
+        if(Input.GetMouseButton(1))
         {
             _drawing = false;
             NotifyAllOfNodeMovement?.Invoke(node.sk._id);

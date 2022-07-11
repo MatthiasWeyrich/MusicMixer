@@ -25,7 +25,8 @@ public class CanvasBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerExit(PointerEventData eventData)
     {
-       StartCoroutine(Countdown(2f));
+       //StartCoroutine(Countdown(2f));
+       _canvas.enabled = false;
     }
 
     protected IEnumerator Countdown(float f){

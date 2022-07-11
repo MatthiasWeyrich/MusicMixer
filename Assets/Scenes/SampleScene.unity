@@ -4820,7 +4820,10 @@ MonoBehaviour:
   fileManager: {fileID: 272408718}
   dropdownManager: {fileID: 1383333470}
   audioManager: {fileID: 2030890328}
-  _componentPrefab: {fileID: 4120508242119600630, guid: 640384aefe4c26c4fb06b3df294925fc, type: 3}
+  startPrefab: {fileID: 1305472768197835176, guid: 1dfda441851bc1142b4270917cd2f78e, type: 3}
+  soundPrefab: {fileID: 1305472768197835176, guid: a375afe6dd33f3b4e9c5230e55a7a899, type: 3}
+  hookPrefab: {fileID: 1305472768197835176, guid: 44c70f56cbe081949b34ecbcbd3a91b6, type: 3}
+  modifierPrefab: {fileID: 1305472768197835176, guid: e605b0714a2dbf34987bfd3925ec7056, type: 3}
   _canvasPrefab: {fileID: 4134405994644455063, guid: eb998156f3f8a564e9a41102892b2b3f, type: 3}
   _canvasPrefabSound: {fileID: 4134405994644455063, guid: 900d7ca8bb2c42940b866502ce9048fb, type: 3}
 --- !u!1 &1233006143

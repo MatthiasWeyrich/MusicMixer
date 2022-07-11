@@ -20,12 +20,15 @@ public class Assignment : MonoBehaviour
     [FormerlySerializedAs("am")] [SerializeField] AudioManager audioManager;
     NodeCreator nodeCreator;
     private SoundStorage soundStorage;
-    [SerializeField] GameObject _componentPrefab;
+    [SerializeField] GameObject startPrefab;
+    [SerializeField] GameObject soundPrefab;
+    [SerializeField] GameObject hookPrefab;
+    [SerializeField] GameObject modifierPrefab;
     [SerializeField] GameObject _canvasPrefab;
     [SerializeField] private GameObject _canvasPrefabSound;
     
     void OnEnable(){
-        nodeCreator = new NodeCreator(_componentPrefab);
+        nodeCreator = new NodeCreator(startPrefab, soundPrefab, hookPrefab, modifierPrefab);
         soundStorage = new SoundStorage();
         fileManager.RequestedSoundLoaded += GetLoadedSource;
         fileManager.RequestedMusicLoaded += GetLoadedMusic;
