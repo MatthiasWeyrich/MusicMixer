@@ -43,9 +43,6 @@ public class DropdownManager : MonoBehaviour
         AddPredefinedHooksToDropdown();
         AddPredefinedModifierToDropdown();
         AddPredefinesFilterToDropwdown();
-        _hookDropdown.onValueChanged.AddListener(delegate { HandleHookDropdown(); });
-        _soundDropdown.onValueChanged.AddListener(delegate { HandleSoundDropdown(); });
-        _modifierDropdown.onValueChanged.AddListener(delegate { HandleModifierDropdown(); });
         _filterDropdown.onValueChanged.AddListener(delegate { HandleFilterDropdown(); });
         _slider.onValueChanged.AddListener(HandleSliderChange);
         _slider.maxValue = 22000f;
@@ -64,21 +61,21 @@ public class DropdownManager : MonoBehaviour
         }
     }
     
-    void HandleSoundDropdown()
+    public void HandleSoundDropdown()
     {
         int index = _soundDropdown.value;
         string soundName = _soundDropdown.options[index].text;
         NodeFromDropdown?.Invoke(soundName, NodeType.Sound);
     }
     
-    void HandleHookDropdown()
+    public void HandleHookDropdown()
     {
         int index = _hookDropdown.value;
         string hookName = _hookDropdown.options[index].text;
         NodeFromDropdown?.Invoke(hookName,NodeType.Hook);
     }
     
-    void HandleModifierDropdown(){
+    public void HandleModifierDropdown(){
         int index = _modifierDropdown.value;
         string modifierName = _modifierDropdown.options[index].text;
         // Names in the Modifier Dropdown have other names than in code.
