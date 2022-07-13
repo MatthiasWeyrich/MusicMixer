@@ -28,6 +28,7 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         
         node.inButton = Array.Find(buttons, button => button.name.Equals("InButton"));
         node.outButton = Array.Find(buttons, button => button.name.Equals("OutButton"));
+        node.modifierButton = Array.Find(buttons, button => button.name.Equals("ModifierButton"));
         EventTrigger eventTrigger = node.outButton.GetComponent<EventTrigger>();
 
         EventTrigger.Entry entry = new EventTrigger.Entry();

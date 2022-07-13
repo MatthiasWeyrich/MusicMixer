@@ -19,7 +19,7 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
 
     public void SetDefinitions(LineRenderer lr, Vector3[] posis, MeshCollider mc, Mesh m){
         _lineRenderer = lr;
-        _positions = new Vector3[]{_from.outButton.transform.position, (_from is Parameter) ? _to.transform.position : _to.inButton.transform.position};
+        _positions = new Vector3[]{_from.outButton.transform.position, (_from is Parameter) ? _to.modifierButton.transform.position : _to.inButton.transform.position};
         _lineRenderer.SetPositions(_positions);
         _meshCollider = mc;
         _mesh = m;
@@ -30,7 +30,7 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
     // Updating the two points (from, to) the line is drawn in between
     // which are just he positions of the origin and the destination node
     public void MoveLine(){
-        _positions = new Vector3[]{_from.outButton.transform.position, (_from is Parameter) ? _to.transform.position : _to.inButton.transform.position};
+        _positions = new Vector3[]{_from.outButton.transform.position, (_from is Parameter) ? _to.modifierButton.transform.position : _to.inButton.transform.position};
         _lineRenderer.SetPositions(_positions);
     }
 

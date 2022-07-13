@@ -19,6 +19,7 @@ public abstract class Node : MonoBehaviour
     public NodeManager nm;
 
     public Button inButton;
+    public Button modifierButton;
     public Button outButton;
 
     protected static bool isPlaying;
