@@ -183,12 +183,14 @@ public class Assignment : MonoBehaviour
     void ApplyHookBasics(GameObject go, string name){
         Hook h = null;
         float setValue = 0f, minValue = 0f, maxValue = 0f;
+        bool wholeNumbers = false;
         switch(name){
             case "Numerator":
                 h = go.AddComponent<Numerator>();
                 minValue = 1f;
-                maxValue = 5f;
-                setValue = 1f;
+                maxValue = 8f;
+                setValue = 2f;
+                wholeNumbers = true;
                 break;
             case "Counter":
                 h = go.AddComponent<Counter>();
@@ -208,7 +210,7 @@ public class Assignment : MonoBehaviour
         h.cm._slider = go.GetComponentInChildren<Slider>();
         h.cm._text = Array.Find(go.GetComponentsInChildren<TextMeshProUGUI>(), button => button.name.Equals("ValueText"));
         h.cm._toggle = go.GetComponentInChildren<Toggle>();
-        h.cm.AddListeners(minValue, maxValue);
+        h.cm.AddListeners(minValue, maxValue, wholeNumbers);
         h.cm._slider.SetValueWithoutNotify(setValue);
         h.cm._value = setValue;
         h.cm.HandleValueChange(h.cm._value);
@@ -303,7 +305,7 @@ public class Assignment : MonoBehaviour
         p.cm._slider = go.GetComponentInChildren<Slider>();
         p.cm._text = Array.Find(go.GetComponentsInChildren<TextMeshProUGUI>(), button => button.name.Equals("ValueText"));
         p.cm._toggle = go.GetComponentInChildren<Toggle>();
-        p.cm.AddListeners(minValue, maxValue);
+        p.cm.AddListeners(minValue, maxValue, false);
         p.cm._slider.SetValueWithoutNotify(setValue);
         p.cm._value = setValue;
         p.cm.HandleValueChange(p.cm._value);

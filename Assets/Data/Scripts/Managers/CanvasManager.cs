@@ -7,13 +7,15 @@ public class CanvasManager : CanvasBase
     public Slider _slider;
     public TextMeshProUGUI _text;
 
-    public void AddListeners(float minValue, float maxValue)
+    public void AddListeners(float minValue, float maxValue, bool wholeNumbers)
     {
         base.AddListeners();
         _slider.onValueChanged.AddListener(HandleValueChange);
         _slider.minValue = minValue;
         _slider.maxValue = maxValue;
+        _slider.wholeNumbers = wholeNumbers;
     }
+    
     public void HandleValueChange(float f)
     {
         _value = f;
