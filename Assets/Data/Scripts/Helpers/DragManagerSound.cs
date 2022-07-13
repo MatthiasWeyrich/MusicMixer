@@ -8,7 +8,7 @@ public class DragManagerSound : DragManager
     {
         _mouseOffset = transform.position - GetMouseWorldPos();
         
-        if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(0))
         {
             _drawing = false;
             NotifyAllOfNodeMovement?.Invoke(node.sk._id);

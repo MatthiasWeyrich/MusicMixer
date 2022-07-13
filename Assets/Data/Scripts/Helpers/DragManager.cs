@@ -92,14 +92,14 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         _mouseOffset = transform.position - GetMouseWorldPos();
         
             // Moving the node in the scene
-        if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(0))
         {
             _drawing = false;
             NotifyAllOfNodeMovement?.Invoke(node.sk._id);
         }
     }
     public virtual void OnDrag(PointerEventData eventData) {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             transform.position = GetMouseWorldPos() - _mouseOffset;
             Movement();

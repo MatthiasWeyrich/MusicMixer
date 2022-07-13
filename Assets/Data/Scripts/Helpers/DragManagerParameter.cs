@@ -11,7 +11,7 @@ public class DragManagerParameter : DragManager
     public override void OnBeginDrag(PointerEventData eventData)
     {
         _mouseOffset = transform.position - GetMouseWorldPos();
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             beingDragged = true;
             NotifyAllOfNodeMovement?.Invoke(node.sk._id);
@@ -20,7 +20,7 @@ public class DragManagerParameter : DragManager
     
     public override void OnDrag(PointerEventData eventData)
     {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             transform.position = GetMouseWorldPos() - _mouseOffset;
             Movement();
