@@ -115,10 +115,10 @@ public class DragManager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             List<GameObject> p = eventData.hovered;
             foreach (GameObject g in p)
             {
-                if (g.TryGetComponent(out Intermediary i))
-                {
-                    if (i != node)
-                        OnObjectHover(i);
+                if (g.TryGetComponent(out Intermediary i)) {
+                    if (i == node)
+                        continue;
+                    OnObjectHover(i);
                     return;
                 }
             }

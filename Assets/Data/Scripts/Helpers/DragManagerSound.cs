@@ -23,16 +23,10 @@ public class DragManagerSound : DragManager
             {
                 if (g.TryGetComponent(out Intermediary i))
                 {
-                    if (i != node)
-                       OnObjectHover(i);
+                    if (i == node)
+                        continue;
+                    OnObjectHover(i);
                     return;
-                }
-                    // Making modifier nodes a valid target
-                else{
-                    if(g.TryGetComponent(out Parameter p)){
-                        OnObjectHover(p);
-                        return;
-                    }
                 }
             }
             if(node.sk.currentLine.gameObject!=null) {
@@ -44,15 +38,5 @@ public class DragManagerSound : DragManager
             LineMovementContainer.Instance.EndOfMovement();
         }
         _drawing = false;
-    }
-
-    // Overloading the method to include modifier nodes
-    private void OnObjectHover(Parameter p){
-        node.nm.AddChild(p.sk._id);
-        node.sk.currentLine.to = p.sk._id;
-        node.sk.currentLine._to = p;
-        node.sk._outgoingLines.Add(node.sk.currentLine);
-        node.sk.CreateLineMesh();
-        node.GetComponent<Sound>()._parameterList.Add(p.sk._id,p);
     }
 }

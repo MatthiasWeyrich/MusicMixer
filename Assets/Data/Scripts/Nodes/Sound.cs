@@ -21,7 +21,7 @@ public class Sound : Intermediary
         
         if (_source.isPlaying)
             _source.Stop();
-        
+
         // If activated, play the sound
         if (Activated)
         {
