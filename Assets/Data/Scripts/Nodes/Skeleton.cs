@@ -89,8 +89,8 @@ public class Skeleton : MonoBehaviour
         _lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         Gradient gradient = new Gradient();
         gradient.SetKeys(
-            new GradientColorKey[] { new GradientColorKey(new Color(0.735849f,0.3713955f,0.3713955f,1.0f), 0.0f), new GradientColorKey(Color.red,1.0f)},
-            new GradientAlphaKey[] { new GradientAlphaKey(1.0f,0.0f), new GradientAlphaKey(1.0f,1.0f)}
+            new GradientColorKey[] { new GradientColorKey(Color.red, 1.0f), new GradientColorKey(Color.red,1.0f)},
+            new GradientAlphaKey[] { new GradientAlphaKey(1.0f,1.0f), new GradientAlphaKey(1.0f,1.0f)}
         );
         _lineRenderer.colorGradient = gradient;
     }

@@ -3,7 +3,7 @@ using System;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
     // When a Line is deleted, we notify the Node this the line started from
     public Action<LineInteraction> OnLineDeletion;
@@ -15,15 +15,15 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
     private MeshCollider _meshCollider;
     private Mesh _mesh;
 
-    bool beingHovered;
+    bool beingHovered = false;
 
     public void SetDefinitions(LineRenderer lr, Vector3[] posis, MeshCollider mc, Mesh m){
         _lineRenderer = lr;
         _positions = posis;
         _meshCollider = mc;
         _mesh = m;
-        _lineRenderer.startColor = Color.gray;
-        _lineRenderer.endColor = Color.red;
+        _lineRenderer.startColor = Color.black;
+        _lineRenderer.endColor = Color.black;
     }
 
     // Updating the two points (from, to) the line is drawn in between
@@ -49,25 +49,24 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         beingHovered = true;
-        StartCoroutine(CheckForDeletion());
+        _lineRenderer.startColor = Color.gray;
+        _lineRenderer.endColor = Color.gray;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _lineRenderer.startColor = Color.black;
+        _lineRenderer.endColor = Color.black;
         beingHovered = false;
     }
 
-    IEnumerator CheckForDeletion(){
-        while(beingHovered){
-            if(Input.GetKey(KeyCode.D)){
-                StartProcess();
-                beingHovered = false;
-            }
-            else yield return new WaitForSeconds(1f);
+    public void OnPointerDown(PointerEventData eventData) {
+
+        if (eventData.button == PointerEventData.InputButton.Left && beingHovered) {
+            OnLineDeletion?.Invoke(this);
+            beingHovered = false;
         }
+        
     }
 
-    public void StartProcess(){
-        OnLineDeletion?.Invoke(this);
-    }
 }
