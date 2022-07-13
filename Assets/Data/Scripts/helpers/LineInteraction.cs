@@ -3,7 +3,7 @@ using System;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
+public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     // When a Line is deleted, we notify the Node this the line started from
     public Action<LineInteraction> OnLineDeletion;
@@ -19,7 +19,8 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
 
     public void SetDefinitions(LineRenderer lr, Vector3[] posis, MeshCollider mc, Mesh m){
         _lineRenderer = lr;
-        _positions = posis;
+        _positions = new Vector3[]{_from.outButton.transform.position, (_from is Parameter) ? _to.transform.position : _to.inButton.transform.position};
+        _lineRenderer.SetPositions(_positions);
         _meshCollider = mc;
         _mesh = m;
         _lineRenderer.startColor = Color.black;
@@ -60,9 +61,9 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
         beingHovered = false;
     }
 
-    public void OnPointerDown(PointerEventData eventData) {
+    public void OnPointerClick(PointerEventData eventData) {
 
-        if (eventData.button == PointerEventData.InputButton.Left && beingHovered) {
+        if (eventData.button == PointerEventData.InputButton.Left) {
             OnLineDeletion?.Invoke(this);
             beingHovered = false;
         }
