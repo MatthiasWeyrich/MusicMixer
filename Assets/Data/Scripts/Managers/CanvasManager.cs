@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CanvasManager : CanvasBase, IPointerEnterHandler, IPointerExitHandler
+public class CanvasManager : CanvasBase
 {
     public Slider _slider;
     public TextMeshProUGUI _text;
@@ -17,7 +17,7 @@ public class CanvasManager : CanvasBase, IPointerEnterHandler, IPointerExitHandl
     public void HandleValueChange(float f)
     {
         _value = f;
-        _text.text = "Value: " + _value.ToString("0.00");
+        _text.text = _value.ToString("0.00");
     }
     
 }

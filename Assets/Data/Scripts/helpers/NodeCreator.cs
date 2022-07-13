@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class NodeCreator
 {
@@ -47,11 +49,15 @@ public class NodeCreator
         }
         
         GameObject gameObject = GameObject.Instantiate(prefab, new Vector3(1, 0, 0), Quaternion.identity);
+        
+        //add random offset so new elements aren't entirely hidden by previous, still unmoved elements
+        gameObject.transform.position += new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0.0f);
+        
         gameObject.GetComponent<Skeleton>()._id = IDManager.id;
         IDManager.id++;
         
-        if (type == NodeType.Hook)
-            gameObject.GetComponentInChildren<TextMeshProUGUI>().SetText(name);
+        if (type == NodeType.Hook || type == NodeType.Modifier)
+            Array.Find(gameObject.GetComponentsInChildren<TextMeshProUGUI>(), button => button.name.Equals("Name")).SetText(name);
         
         switch (type){
             case NodeType.Start:

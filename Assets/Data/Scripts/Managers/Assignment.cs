@@ -24,7 +24,6 @@ public class Assignment : MonoBehaviour
     [SerializeField] GameObject soundPrefab;
     [SerializeField] GameObject hookPrefab;
     [SerializeField] GameObject modifierPrefab;
-    [SerializeField] GameObject _canvasPrefab;
     [SerializeField] private GameObject _canvasPrefabSound;
     
     void OnEnable(){
@@ -169,13 +168,12 @@ public class Assignment : MonoBehaviour
         s.vm = s.gameObject.AddComponent<VisualManager>();
         s.dm = s.gameObject.AddComponent<DragManagerSound>();
         s.cm = s.gameObject.AddComponent<CanvasBase>();
-        GameObject canvasPrefab = Instantiate(_canvasPrefabSound);
-        canvasPrefab.transform.parent = go.transform;
-        canvasPrefab.transform.position = go.transform.position;
-        canvasPrefab.transform.position = new Vector3(canvasPrefab.transform.position.x+0.05f, canvasPrefab.transform.position.y-1.2f,canvasPrefab.transform.position.z);
-        s.cm._canvas = canvasPrefab.GetComponentInChildren<Canvas>();
-        s.cm._button = canvasPrefab.GetComponentInChildren<Button>();
-        s.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
+        //GameObject canvasPrefab = Instantiate(_canvasPrefabSound);
+        //canvasPrefab.transform.parent = go.transform;
+        //canvasPrefab.transform.position = go.transform.position;
+        //canvasPrefab.transform.position = new Vector3(canvasPrefab.transform.position.x+0.05f, canvasPrefab.transform.position.y-1.2f,canvasPrefab.transform.position.z);
+        s.cm._button = Array.Find(go.GetComponentsInChildren<Button>(), button => button.name.Equals("DeleteButton"));
+        s.cm._toggle = go.GetComponentInChildren<Toggle>();
         s.cm.AddListeners();
         s.nm = new NodeManager(s);
         s.am = audioManager;
@@ -194,9 +192,9 @@ public class Assignment : MonoBehaviour
                 break;
             case "Counter":
                 h = go.AddComponent<Counter>();
-                minValue = 0f;
+                minValue = 0.2f;
                 maxValue = 10f;
-                setValue = 0f;
+                setValue = 1f;
                 break;
             case "Guard":
                 h = go.AddComponent<Guard>();
@@ -206,15 +204,10 @@ public class Assignment : MonoBehaviour
                 break;
         }
         h.cm = h.gameObject.AddComponent<CanvasManager>();
-        GameObject canvasPrefab = Instantiate(_canvasPrefab);
-        canvasPrefab.transform.parent = go.transform;
-        canvasPrefab.transform.position = go.transform.position;
-        canvasPrefab.transform.position = new Vector3(canvasPrefab.transform.position.x+0.05f, canvasPrefab.transform.position.y-1.2f,canvasPrefab.transform.position.z);
-        h.cm._canvas = canvasPrefab.GetComponentInChildren<Canvas>();
-        h.cm._button = canvasPrefab.GetComponentInChildren<Button>();
-        h.cm._slider = canvasPrefab.GetComponentInChildren<Slider>();
-        h.cm._text = canvasPrefab.GetComponentInChildren<TextMeshProUGUI>();
-        h.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
+        h.cm._button = Array.Find(go.GetComponentsInChildren<Button>(), button => button.name.Equals("DeleteButton"));
+        h.cm._slider = go.GetComponentInChildren<Slider>();
+        h.cm._text = Array.Find(go.GetComponentsInChildren<TextMeshProUGUI>(), button => button.name.Equals("ValueText"));
+        h.cm._toggle = go.GetComponentInChildren<Toggle>();
         h.cm.AddListeners(minValue, maxValue);
         h.cm._slider.SetValueWithoutNotify(setValue);
         h.cm._value = setValue;
@@ -306,15 +299,10 @@ public class Assignment : MonoBehaviour
             break;
         }
         p.cm = p.gameObject.AddComponent<CanvasManager>();
-        GameObject canvasPrefab = Instantiate(_canvasPrefab);
-        canvasPrefab.transform.parent = go.transform;
-        canvasPrefab.transform.position = go.transform.position;
-        canvasPrefab.transform.position = new Vector3(canvasPrefab.transform.position.x+0.05f, canvasPrefab.transform.position.y-1.2f,canvasPrefab.transform.position.z);
-        p.cm._canvas = canvasPrefab.GetComponentInChildren<Canvas>();
-        p.cm._button = canvasPrefab.GetComponentInChildren<Button>();
-        p.cm._slider = canvasPrefab.GetComponentInChildren<Slider>();
-        p.cm._text = canvasPrefab.GetComponentInChildren<TextMeshProUGUI>();
-        p.cm._toggle = canvasPrefab.GetComponentInChildren<Toggle>();
+        p.cm._button = Array.Find(go.GetComponentsInChildren<Button>(), button => button.name.Equals("DeleteButton"));
+        p.cm._slider = go.GetComponentInChildren<Slider>();
+        p.cm._text = Array.Find(go.GetComponentsInChildren<TextMeshProUGUI>(), button => button.name.Equals("ValueText"));
+        p.cm._toggle = go.GetComponentInChildren<Toggle>();
         p.cm.AddListeners(minValue, maxValue);
         p.cm._slider.SetValueWithoutNotify(setValue);
         p.cm._value = setValue;

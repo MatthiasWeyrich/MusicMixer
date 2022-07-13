@@ -29,7 +29,7 @@ public class LineInteraction : MonoBehaviour, IDropHandler, IPointerEnterHandler
     // Updating the two points (from, to) the line is drawn in between
     // which are just he positions of the origin and the destination node
     public void MoveLine(){
-        _positions = new Vector3[]{_from.outButton.transform.position, _to.inButton.transform.position};
+        _positions = new Vector3[]{_from.outButton.transform.position, (_to is Parameter) ? _to.transform.position : _to.inButton.transform.position};
         _lineRenderer.SetPositions(_positions);
     }
 
