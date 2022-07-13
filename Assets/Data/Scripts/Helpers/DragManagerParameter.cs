@@ -35,8 +35,9 @@ public class DragManagerParameter : DragManager
             {
                 if (g.TryGetComponent(out Sound i))
                 {
-                    if (i != node)
-                        OnObjectHover(i);
+                    if (i == node)
+                        continue;
+                    OnObjectHover(i);
                     return;
                 }
             }
